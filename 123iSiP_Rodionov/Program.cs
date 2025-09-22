@@ -224,4 +224,55 @@ namespace StoreInventory
 
             product.Quantity -= amount;
             Console.WriteLine("Товар продан. Остаток: " + product.Quantity);
-        }  
+        }
+        private static void SearchProducts()
+        {
+            Console.WriteLine("Поиск по: 1 - Код, 2 - Название, 3 - Категория");
+            if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 3)
+            {
+                Console.WriteLine("Неверный выбор.");
+                return;
+            }
+
+            List<Product> results = new List<Product>();
+
+            switch (choice)
+            {
+                case 1:
+                    Console.Write("Код: ");
+                    if (int.TryParse(Console.ReadLine(), out int id))
+                    {
+                        var product = products.Find(p => p.Id == id);
+                        if (product != null) results.Add(product);
+                    }
+                    break;
+                case 2:
+                    Console.Write("Название (часть): ");
+                    string namePart = Console.ReadLine().Trim().ToLower();
+                    results = products.FindAll(p => p.Name.ToLower().Contains(namePart));
+                    break;
+                case 3:
+                    Console.WriteLine("Категории: " + string.Join(", ", Enum.GetNames(typeof(Category))));
+                    Console.Write("Категория: ");
+                    if (Enum.TryParse(Console.ReadLine(), true, out Category cat) && Enum.IsDefined(typeof(Category), cat))
+                    {
+                        results = products.FindAll(p => p.Category == cat);
+                    }
+                    break;
+            }
+
+            if (results.Count == 0)
+            {
+                Console.WriteLine("Товары не найдены.");
+                return;
+            }
+
+            Console.WriteLine("Результаты поиска:");
+            foreach (var p in results)
+            {
+                Console.WriteLine(p.ToString());
+                Console.WriteLine("-------------------");
+            }
+        }
+    }
+}
