@@ -188,4 +188,40 @@ namespace StoreInventory
 
             product.Quantity += amount;
             Console.WriteLine("Поставка заказана. Новое количество: " + product.Quantity);
+        }
+        private static void SellProduct()
+        {
+            Console.Write("Введите код товара: ");
+            if (!int.TryParse(Console.ReadLine(), out int id) || id < 1)
+            {
+                Console.WriteLine("Неверный код.");
+                return;
+            }
+
+            var product = products.Find(p => p.Id == id);
+            if (product == null)
+            {
+                Console.WriteLine("Товар не найден.");
+                return;
+            }
+
+            if (!product.InStock)
+            {
+                Console.WriteLine("Товар отсутствует на складе.");
+                return;
+            }
+
+            int amount;
+            do
+            {
+                Console.Write("Количество для продажи: ");
+                if (!int.TryParse(Console.ReadLine(), out amount) || amount <= 0 || amount > product.Quantity)
+                {
+                    Console.WriteLine($"Количество должно быть положительным целым числом, не больше {product.Quantity}.");
+                    amount = 0;
+                }
+            } while (amount <= 0);
+
+            product.Quantity -= amount;
+            Console.WriteLine("Товар продан. Остаток: " + product.Quantity);
         }  
