@@ -139,4 +139,24 @@ namespace StoreInventory
             var product = new Product(nextId++, name, price, quantity, category);
             products.Add(product);
             Console.WriteLine("Товар добавлен.");
-        }  
+        }
+        private static void RemoveProduct()
+        {
+            Console.Write("Введите код товара для удаления: ");
+            if (!int.TryParse(Console.ReadLine(), out int id) || id < 1)
+            {
+                Console.WriteLine("Неверный код.");
+                return;
+            }
+
+            var product = products.Find(p => p.Id == id);
+            if (product == null)
+            {
+                Console.WriteLine("Товар не найден.");
+                return;
+            }
+
+            products.Remove(product);
+            Console.WriteLine("Товар удален.");
+        }
+  
