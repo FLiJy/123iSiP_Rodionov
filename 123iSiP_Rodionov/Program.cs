@@ -87,4 +87,56 @@ namespace StoreInventory
             products.Add(new Product(nextId++, "Футболка", 1500.00m, 20, Category.Clothing));
             products.Add(new Product(nextId++, "Книга по C#", 2000.00m, 15, Category.Books));
             products.Add(new Product(nextId++, "Конструктор LEGO", 5000.00m, 5, Category.Toys));
+        }
+        private static void AddProduct()
+        {
+            Console.WriteLine("Добавление товара:");
+
+            string name;
+            do
+            {
+                Console.Write("Название: ");
+                name = Console.ReadLine().Trim();
+                if (string.IsNullOrEmpty(name))
+                {
+                    Console.WriteLine("Название не может быть пустым.");
+                }
+            } while (string.IsNullOrEmpty(name));
+ 
+            decimal price;
+            do
+            {
+                Console.Write("Цена: ");
+                if (!decimal.TryParse(Console.ReadLine(), out price) || price <= 0)
+                {
+                    Console.WriteLine("Цена должна быть положительным числом.");
+                    price = 0;
+                }
+            } while (price <= 0);
+
+            int quantity;
+            do
+            {
+                Console.Write("Количество: ");
+                if (!int.TryParse(Console.ReadLine(), out quantity) || quantity < 0)
+                {
+                    Console.WriteLine("Количество должно быть неотрицательным целым числом.");
+                    quantity = -1;
+                }
+            } while (quantity < 0);
+ 
+            Category category;
+            do
+            {
+                Console.WriteLine("Категории: " + string.Join(", ", Enum.GetNames(typeof(Category))));
+                Console.Write("Категория: ");
+                if (!Enum.TryParse(Console.ReadLine(), true, out category) || !Enum.IsDefined(typeof(Category), category))
+                {
+                    Console.WriteLine("Неверная категория.");
+                }
+            } while (!Enum.IsDefined(typeof(Category), category));
+
+            var product = new Product(nextId++, name, price, quantity, category);
+            products.Add(product);
+            Console.WriteLine("Товар добавлен.");
         }  
