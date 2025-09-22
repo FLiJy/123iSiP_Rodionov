@@ -42,7 +42,7 @@ namespace StoreInventory
 
         static void Main(string[] args)
         {
-            InitializeTestData(); 
+            
 
             while (true)
             {
@@ -80,14 +80,7 @@ namespace StoreInventory
             }
         }
 
-        private static void InitializeTestData()
-        {
-            products.Add(new Product(nextId++, "Смартфон", 29999.99m, 10, Category.Electronics));
-            products.Add(new Product(nextId++, "Яблоки", 99.50m, 50, Category.Food));
-            products.Add(new Product(nextId++, "Футболка", 1500.00m, 20, Category.Clothing));
-            products.Add(new Product(nextId++, "Книга по C#", 2000.00m, 15, Category.Books));
-            products.Add(new Product(nextId++, "Конструктор LEGO", 5000.00m, 5, Category.Toys));
-        }
+        
         private static void AddProduct()
         {
             Console.WriteLine("Добавление товара:");
