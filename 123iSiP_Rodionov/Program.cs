@@ -6,11 +6,11 @@ namespace StoreInventory
 {  
     public enum Category
     {
-        Electronics,
-        Food,
-        Clothing,
-        Books,
-        Toys
+        Электроника,
+        Еда,
+        Одежда,
+        Книги,
+        Игрушки
     }
     public class Product
     {
