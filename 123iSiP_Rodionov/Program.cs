@@ -1,2 +1,14 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿//пр2  
+using System;
+using System.Collections.Generic;
+
+namespace StoreInventory
+{  
+    public enum Category
+    {
+        Electronics,
+        Food,
+        Clothing,
+        Books,
+        Toys
+    }  
