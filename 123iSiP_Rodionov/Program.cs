@@ -143,5 +143,20 @@ class Program
             }
             return frequencyDict;
         }
+        // Отображение статистики по тексту
+        private static void DisplayStats(TextStatistics stats)
+        {
+            Console.WriteLine($"Количество слов: {stats.WordCount}");
+            Console.WriteLine($"Самое короткое слово: '{stats.ShortestWord}'");
+            Console.WriteLine($"Количество предложений: {stats.SentenceCount}");
+            Console.WriteLine($"Количество гласных букв: {stats.VowelsCount}");
+            Console.WriteLine($"Количество согласных букв: {stats.ConsonantsCount}");
+            Console.WriteLine($"Самое длинное слово: '{stats.LongestWord}'");
+            Console.WriteLine("Частота встречаемости каждой буквы:");
+            foreach (var pair in stats.LetterFrequency)
+            {
+                Console.WriteLine($"{pair.Key}: {pair.Value}");
+            }
+        }
+    }
 
-       
