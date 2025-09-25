@@ -158,5 +158,29 @@ class Program
                 Console.WriteLine($"{pair.Key}: {pair.Value}");
             }
         }
+      }
+    // Класс для хранения статистической информации по каждому тексту
+    public class TextStatistics
+    {
+        public readonly int WordCount;
+        public readonly string ShortestWord;
+        public readonly int SentenceCount;
+        public readonly int VowelsCount;
+        public readonly int ConsonantsCount;
+        public readonly string LongestWord;
+        public readonly Dictionary<char, int> LetterFrequency;
+
+        public TextStatistics(int wordCount, string shortestWord, int sentenceCount,
+                              int vowelsCount, int consonantsCount, string longestWord,
+                              Dictionary<char, int> letterFrequency)
+        {
+            this.WordCount = wordCount;
+            this.ShortestWord = shortestWord;
+            this.SentenceCount = sentenceCount;
+            this.VowelsCount = vowelsCount;
+            this.ConsonantsCount = consonantsCount;
+            this.LongestWord = longestWord;
+            this.LetterFrequency = letterFrequency;
+        }
     }
 
