@@ -119,5 +119,29 @@ class Program
             return count;
         }
 
+        // Поиск самого длинного слова
+        private static string FindLongestWord(string[] words)
+        {
+            string longest = words[0];
+            for (int i = 1; i < words.Length; i++)
+            {
+                if (words[i].Length > longest.Length)
+                    longest = words[i];
+            }
+            return longest;
+        }
+
+        // Статистика частотности букв
+        private static Dictionary<char, int> CalculateLetterFrequency(string text)
+        {
+            Dictionary<char, int> frequencyDict = new Dictionary<char, int>();
+            foreach (char ch in text.ToCharArray())
+            {
+                if (!frequencyDict.ContainsKey(ch))
+                    frequencyDict[ch] = 0;
+                frequencyDict[ch]++;
+            }
+            return frequencyDict;
+        }
 
        
