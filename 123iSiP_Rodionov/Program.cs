@@ -55,6 +55,31 @@ class Program
 
             return new TextStatistics(wordCount, shortestWord, sentenceCount,
                                       vowelsCount, consonantsCount, longestWord, letterFrequency);
+            }
+        // Функция для разделения строки на отдельные слова
+        private static string[] SplitIntoWords(string text)
+        {
+            char[] separators = { ' ', '\t', '\n' };
+            return text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
+
+        // Подсчёт общего количества слов
+        private static int CountWords(string[] words)
+        {
+            return words.Length;
+        }
+
+        // Поиск самого короткого слова среди списка слов
+        private static string FindShortestWord(string[] words)
+        {
+            string shortest = words[0];
+            for (int i = 1; i < words.Length; i++)
+            {
+                if (words[i].Length < shortest.Length)
+                    shortest = words[i];
+            }
+            return shortest;
+        }
+
 
        
