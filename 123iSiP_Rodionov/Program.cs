@@ -32,5 +32,29 @@ class Program
                 Console.WriteLine("Ошибка: введённый текст меньше 100 символов.");
             }
         }
+        // Если были обработаны хотя бы два текста, выводим статистику всех предыдущих
+        if (statisticsList.Count > 1)
+        {
+            foreach (var stat in statisticsList)
+            {
+                Console.WriteLine("\nСтатистика предыдущего текста:");
+                DisplayStats(stat);
+            }
+        }
+    }
+        private static TextStatistics ProcessText(string text)
+        {
+            var words = SplitIntoWords(text);                  // Разбиваем текст на слова
+            int wordCount = CountWords(words);                 // Подсчёт числа слов
+            string shortestWord = FindShortestWord(words);     // Поиск самого короткого слова
+            int sentenceCount = CountSentences(text);          // Подсчёт предложений
+            int vowelsCount = CountVowels(text);               // Количество гласных
+            int consonantsCount = CountConsonants(text);       // Количество согласных
+            string longestWord = FindLongestWord(words);       // Самое длинное слово
+            Dictionary<char, int> letterFrequency = CalculateLetterFrequency(text); // Частота букв
+
+            return new TextStatistics(wordCount, shortestWord, sentenceCount,
+                                      vowelsCount, consonantsCount, longestWord, letterFrequency);
+        }
 
        
