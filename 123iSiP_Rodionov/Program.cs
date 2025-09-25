@@ -80,6 +80,44 @@ class Program
             }
             return shortest;
         }
+        // Подсчёт количества предложений в тексте
+        private static int CountSentences(string text)
+        {
+            char[] endMarks = { '.', '!', '?' };              // Знаки конца предложения
+            int count = 0;
+            foreach (char ch in text)
+            {
+                if (Array.IndexOf(endMarks, ch) >= 0)
+                    count++;
+            }
+            return count;
+        }
+
+        // Подсчёт количества гласных букв
+        private static int CountVowels(string text)
+        {
+            string vowels = "aeiouyAEIOUY";                   // Гласные буквы латинского алфавита
+            int count = 0;
+            foreach (char ch in text)
+            {
+                if (vowels.Contains(ch))
+                    count++;
+            }
+            return count;
+        }
+
+        // Подсчёт количества согласных букв
+        private static int CountConsonants(string text)
+        {
+            string consonants = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ";
+            int count = 0;
+            foreach (char ch in text)
+            {
+                if (consonants.Contains(ch))
+                    count++;
+            }
+            return count;
+        }
 
 
        
