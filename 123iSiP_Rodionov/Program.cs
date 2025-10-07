@@ -150,3 +150,46 @@ namespace LibraryApp
             }
             else Console.WriteLine("Неверный ID.");
         }
+        static void SearchBooks()
+        {
+            Console.WriteLine("1. По названию");
+            Console.WriteLine("2. По автору");
+            Console.WriteLine("3. По жанру");
+            Console.Write("Выберите способ поиска: ");
+            string choice = Console.ReadLine();
+
+            IEnumerable<Book> result = Enumerable.Empty<Book>();
+
+            switch (choice)
+            {
+                case "1":
+                    Console.Write("Введите название: ");
+                    string title = Console.ReadLine();
+                    result = books.Where(b => b.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+                    break;
+                case "2":
+                    Console.Write("Введите автора: ");
+                    string author = Console.ReadLine();
+                    result = books.Where(b => b.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
+                    break;
+                case "3":
+                    Console.WriteLine("Выберите жанр:");
+                    foreach (var g in Enum.GetValues(typeof(Genre)))
+                        Console.WriteLine($"{(int)g}. {g}");
+                    if (int.TryParse(Console.ReadLine(), out int gChoice) && Enum.IsDefined(typeof(Genre), gChoice))
+                    {
+                        Genre g = (Genre)gChoice;
+                        result = books.Where(b => b.Genre == g);
+                    }
+                    else Console.WriteLine("Неверный выбор жанра.");
+                    break;
+                default:
+                    Console.WriteLine("Неверный выбор.");
+                    return;
+            }
+
+            if (result.Any())
+                foreach (var b in result) Console.WriteLine(b);
+            else
+                Console.WriteLine("Книги не найдены.");
+        }
