@@ -212,3 +212,18 @@ namespace LibraryApp
             else
                 Console.WriteLine("Неверный выбор.");
         }
+
+        static void ShowPriceExtremes()
+        {
+            if (books.Count == 0)
+            {
+                Console.WriteLine("Нет книг в списке.");
+                return;
+            }
+
+            var max = books.OrderByDescending(b => b.Price).First();
+            var min = books.OrderBy(b => b.Price).First();
+
+            Console.WriteLine("Самая дорогая книга:\n" + max);
+            Console.WriteLine("Самая дешёвая книга:\n" + min);
+        }
