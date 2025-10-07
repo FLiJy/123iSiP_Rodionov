@@ -235,3 +235,12 @@ namespace LibraryApp
             foreach (var g in grouped)
                 Console.WriteLine($"{g.Author}: {g.Count} книг(и)");
         }
+        static void ShowAllBooks()
+        {
+            if (books.Count == 0)
+                Console.WriteLine("Нет книг в библиотеке.");
+            else
+                foreach (var b in books) Console.WriteLine(b);
+        }
+    }
+}
