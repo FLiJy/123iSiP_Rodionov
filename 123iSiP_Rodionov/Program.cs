@@ -227,3 +227,11 @@ namespace LibraryApp
             Console.WriteLine("Самая дорогая книга:\n" + max);
             Console.WriteLine("Самая дешёвая книга:\n" + min);
         }
+        static void GroupByAuthors()
+        {
+            var grouped = books.GroupBy(b => b.Author)
+                               .Select(g => new { Author = g.Key, Count = g.Count() });
+
+            foreach (var g in grouped)
+                Console.WriteLine($"{g.Author}: {g.Count} книг(и)");
+        }
