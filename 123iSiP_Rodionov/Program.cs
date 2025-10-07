@@ -193,3 +193,22 @@ namespace LibraryApp
             else
                 Console.WriteLine("Книги не найдены.");
         }
+        static void SortBooks()
+        {
+            Console.WriteLine("1. По названию");
+            Console.WriteLine("2. По году");
+            Console.Write("Выберите вариант сортировки: ");
+            string choice = Console.ReadLine();
+
+            IEnumerable<Book> sorted = choice switch
+            {
+                "1" => books.OrderBy(b => b.Title),
+                "2" => books.OrderBy(b => b.Year),
+                _ => Enumerable.Empty<Book>()
+            };
+
+            if (sorted.Any())
+                foreach (var b in sorted) Console.WriteLine(b);
+            else
+                Console.WriteLine("Неверный выбор.");
+        }
