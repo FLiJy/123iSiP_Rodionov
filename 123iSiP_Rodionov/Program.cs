@@ -48,3 +48,46 @@ namespace LibraryApp
             return $"ID: {Id}\nНазвание: {Title}\nАвтор: {Author}\nЖанр: {Genre}\nГод: {Year}\nЦена: {Price} руб.\n";
         }
     }
+    class Program
+    {
+        static List<Book> books = new List<Book>();
+
+        static void Main()
+        {
+            // Добавляем тестовые данные
+            books.Add(new Book("Война и мир", "Лев Толстой", Genre.History, 1869, 1200));
+            books.Add(new Book("1984", "Джордж Оруэлл", Genre.Fiction, 1949, 800));
+            books.Add(new Book("Гарри Поттер", "Дж. Роулинг", Genre.Fantasy, 1997, 1000));
+            books.Add(new Book("Краткая история времени", "Стивен Хокинг", Genre.Science, 1988, 1500));
+            books.Add(new Book("Стив Джобс", "Уолтер Айзексон", Genre.Biography, 2011, 1100));
+
+            while (true)
+            {
+                Console.WriteLine("\n--- БИБЛИОТЕКА ---");
+                Console.WriteLine("1. Добавить книгу");
+                Console.WriteLine("2. Удалить книгу по ID");
+                Console.WriteLine("3. Найти книги");
+                Console.WriteLine("4. Отсортировать книги");
+                Console.WriteLine("5. Самая дорогая и самая дешёвая книга");
+                Console.WriteLine("6. Сгруппировать книги по авторам");
+                Console.WriteLine("7. Показать все книги");
+                Console.WriteLine("0. Выйти");
+                Console.Write("Выберите команду: ");
+
+                var input = Console.ReadLine();
+                Console.Clear();
+
+                switch (input)
+                {
+                    case "1": AddBook(); break;
+                    case "2": DeleteBook(); break;
+                    case "3": SearchBooks(); break;
+                    case "4": SortBooks(); break;
+                    case "5": ShowPriceExtremes(); break;
+                    case "6": GroupByAuthors(); break;
+                    case "7": ShowAllBooks(); break;
+                    case "0": return;
+                    default: Console.WriteLine("Неверный выбор."); break;
+                }
+            }
+        }
