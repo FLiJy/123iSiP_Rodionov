@@ -135,3 +135,18 @@ namespace LibraryApp
                 Console.WriteLine($"Ошибка: {ex.Message}");
             }
         }
+        static void DeleteBook()
+        {
+            Console.Write("Введите ID книги для удаления: ");
+            if (int.TryParse(Console.ReadLine(), out int id))
+            {
+                var book = books.FirstOrDefault(b => b.Id == id);
+                if (book != null)
+                {
+                    books.Remove(book);
+                    Console.WriteLine("Книга удалена.");
+                }
+                else Console.WriteLine("Книга с таким ID не найдена.");
+            }
+            else Console.WriteLine("Неверный ID.");
+        }
