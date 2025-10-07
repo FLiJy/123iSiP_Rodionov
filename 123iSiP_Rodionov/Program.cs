@@ -4,14 +4,13 @@ using System.Linq;
 
 namespace LibraryApp
 {
-    // Перечисление жанров
     public enum Genre
     {
-        Fiction = 1,       // Художественная литература
-        Science,           // Научная
-        History,           // Историческая
-        Fantasy,           // Фэнтези
-        Biography          // Биография
+        Fiction = 1,       
+        Science,           
+        History,           
+        Fantasy,           
+        Biography          
     }
     public class Book
     {
@@ -54,7 +53,7 @@ namespace LibraryApp
 
         static void Main()
         {
-            // Добавляем тестовые данные
+            
             books.Add(new Book("Война и мир", "Лев Толстой", Genre.History, 1869, 1200));
             books.Add(new Book("1984", "Джордж Оруэлл", Genre.Fiction, 1949, 800));
             books.Add(new Book("Гарри Поттер", "Дж. Роулинг", Genre.Fantasy, 1997, 1000));
