@@ -91,3 +91,47 @@ namespace LibraryApp
                 }
             }
         }
+        static void AddBook()
+        {
+            try
+            {
+                Console.Write("Введите название: ");
+                string title = Console.ReadLine();
+
+                Console.Write("Введите автора: ");
+                string author = Console.ReadLine();
+
+                Console.WriteLine("Выберите жанр:");
+                foreach (var g in Enum.GetValues(typeof(Genre)))
+                    Console.WriteLine($"{(int)g}. {g}");
+
+                if (!int.TryParse(Console.ReadLine(), out int genreChoice) || !Enum.IsDefined(typeof(Genre), genreChoice))
+                {
+                    Console.WriteLine("Неверный выбор жанра.");
+                    return;
+                }
+
+                Genre genre = (Genre)genreChoice;
+
+                Console.Write("Введите год издания: ");
+                if (!int.TryParse(Console.ReadLine(), out int year) || year <= 0)
+                {
+                    Console.WriteLine("Некорректный год.");
+                    return;
+                }
+
+                Console.Write("Введите цену: ");
+                if (!decimal.TryParse(Console.ReadLine(), out decimal price) || price < 0)
+                {
+                    Console.WriteLine("Некорректная цена.");
+                    return;
+                }
+
+                books.Add(new Book(title, author, genre, year, price));
+                Console.WriteLine("Книга успешно добавлена!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
