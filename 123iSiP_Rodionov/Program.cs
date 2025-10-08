@@ -6,11 +6,11 @@ namespace LibraryApp
 {
     public enum Genre
     {
-        Fiction = 1,       
-        Science,           
-        History,           
-        Fantasy,           
-        Biography          
+        Художка = 1,       
+        Наука,           
+        История,           
+        Фентези,           
+        Биография          
     }
     public class Book
     {
@@ -54,11 +54,11 @@ namespace LibraryApp
         static void Main()
         {
             
-            books.Add(new Book("Война и мир", "Лев Толстой", Genre.History, 1869, 1200));
-            books.Add(new Book("1984", "Джордж Оруэлл", Genre.Fiction, 1949, 800));
-            books.Add(new Book("Гарри Поттер", "Дж. Роулинг", Genre.Fantasy, 1997, 1000));
-            books.Add(new Book("Краткая история времени", "Стивен Хокинг", Genre.Science, 1988, 1500));
-            books.Add(new Book("Стив Джобс", "Уолтер Айзексон", Genre.Biography, 2011, 1100));
+            books.Add(new Book("Война и мир", "Лев Толстой", Genre.История, 1869, 1200));
+            books.Add(new Book("1984", "Джордж Оруэлл", Genre.Художка, 1949, 800));
+            books.Add(new Book("Гарри Поттер", "Дж. Роулинг", Genre.Фентези, 1997, 1000));
+            books.Add(new Book("Краткая история времени", "Стивен Хокинг", Genre.Наука, 1988, 1500));
+            books.Add(new Book("Стив Джобс", "Уолтер Айзексон", Genre.Биография, 2011, 1100));
 
             while (true)
             {
