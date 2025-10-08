@@ -16,12 +16,10 @@ class Program
             {
                 TextStatistics stats = ProcessText(inputText);
 
-                // Добавляем статистику текущего текста в общий список
                 statisticsList.Add(stats);
 
-                DisplayStats(stats);   // Показываем текущую статистику
+                DisplayStats(stats);   
 
-                // Спрашиваем пользователя, хочет ли он ввести новый текст
                 Console.WriteLine("\nХотите обработать ещё один текст? (Да/Нет)");
                 string answer = Console.ReadLine().ToLower();
                 if (answer != "да")
@@ -32,7 +30,7 @@ class Program
                 Console.WriteLine("Ошибка: введённый текст меньше 100 символов.");
             }
         }
-        // Если были обработаны хотя бы два текста, выводим статистику всех предыдущих
+
         if (statisticsList.Count > 1)
         {
             foreach (var stat in statisticsList)
@@ -44,10 +42,10 @@ class Program
     }
         private static TextStatistics ProcessText(string text)
         {
-            var words = SplitIntoWords(text);                  // Разбиваем текст на слова
-            int wordCount = CountWords(words);                 // Подсчёт числа слов
-            string shortestWord = FindShortestWord(words);     // Поиск самого короткого слова
-            int sentenceCount = CountSentences(text);          // Подсчёт предложений
+            var words = SplitIntoWords(text);                  // Разбор на слова
+            int wordCount = CountWords(words);                 // Подсчёт количества слов
+            string shortestWord = FindShortestWord(words);     // Поиск короткого слова
+            int sentenceCount = CountSentences(text);          // Счёт предложений
             int vowelsCount = CountVowels(text);               // Количество гласных
             int consonantsCount = CountConsonants(text);       // Количество согласных
             string longestWord = FindLongestWord(words);       // Самое длинное слово
@@ -56,14 +54,13 @@ class Program
             return new TextStatistics(wordCount, shortestWord, sentenceCount,
                                       vowelsCount, consonantsCount, longestWord, letterFrequency);
             }
-        // Функция для разделения строки на отдельные слова
         private static string[] SplitIntoWords(string text)
         {
             char[] separators = { ' ', '\t', '\n' };
             return text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        // Подсчёт общего количества слов
+        // Подсчёт общего кол-ва слов
         private static int CountWords(string[] words)
         {
             return words.Length;
@@ -93,10 +90,10 @@ class Program
             return count;
         }
 
-        // Подсчёт количества гласных букв
+        // Подсчёт кол-ва гласных букв
         private static int CountVowels(string text)
         {
-            string vowels = "aeiouyAEIOUY";                   // Гласные буквы латинского алфавита
+            string vowels = "aeiouyAEIOUY";                   // Гласные буквы англ алфавита
             int count = 0;
             foreach (char ch in text)
             {
@@ -106,7 +103,7 @@ class Program
             return count;
         }
 
-        // Подсчёт количества согласных букв
+        // Подсчёт кол-ва согласных букв
         private static int CountConsonants(string text)
         {
             string consonants = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ";
@@ -143,7 +140,7 @@ class Program
             }
             return frequencyDict;
         }
-        // Отображение статистики по тексту
+        // Отображение статистики 
         private static void DisplayStats(TextStatistics stats)
         {
             Console.WriteLine($"Количество слов: {stats.WordCount}");
