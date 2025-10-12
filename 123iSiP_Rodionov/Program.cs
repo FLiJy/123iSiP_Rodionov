@@ -334,3 +334,15 @@ namespace UniversityManagementSystem
                 Console.WriteLine("Студент не найден.");
             }
         }
+        private static void AddTeacher(University university)
+        {
+            Console.Write("Введите имя: ");
+            string name = Console.ReadLine();
+            Console.Write("Введите возраст: ");
+            int age = int.Parse(Console.ReadLine());
+            Console.Write("Введите контакт: ");
+            string contact = Console.ReadLine();
+            Teacher teacher = new Teacher(name, age, contact);
+            university.AddTeacher(teacher);
+            Console.WriteLine("Преподаватель добавлен успешно.");
+        }
