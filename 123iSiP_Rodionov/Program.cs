@@ -52,3 +52,15 @@ namespace UniversityManagementSystem
                 course.AddStudent(this);
             }
         }
+        // Публичный метод для получения списка курсов
+        public List<Course> GetEnrolledCourses() => new List<Course>(enrolledCourses);
+
+        // Реализация абстрактного метода (полиморфизм)
+        public override string GetRole() => "Студент";
+
+        // Переопределение ToString с дополнительной информацией
+        public override string ToString()
+        {
+            return base.ToString() + $", Записанные курсы: {enrolledCourses.Count}";
+        }
+    }
