@@ -154,3 +154,30 @@ namespace UniversityManagementSystem
         public Student FindStudentById(int id) => students.Find(s => s.Id == id);
         public Teacher FindTeacherById(int id) => teachers.Find(t => t.Id == id);
         public Course FindCourseById(int id) => courses.Find(c => c.Id == id);
+        // Методы для вывода списков
+        public void ListAllStudents()
+        {
+            Console.WriteLine("Все студенты:");
+            foreach (var student in students)
+            {
+                Console.WriteLine(student);
+            }
+        }
+
+        public void ListAllTeachers()
+        {
+            Console.WriteLine("Все преподаватели:");
+            foreach (var teacher in teachers)
+            {
+                Console.WriteLine(teacher);
+            }
+        }
+
+        public void ListAllCourses()
+        {
+            Console.WriteLine("Все курсы:");
+            foreach (var course in courses)
+            {
+                Console.WriteLine(course);
+            }
+        }
