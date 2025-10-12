@@ -64,3 +64,20 @@ namespace UniversityManagementSystem
             return base.ToString() + $", Записанные курсы: {enrolledCourses.Count}";
         }
     }
+    // Класс Teacher, наследующий от Person
+    public class Teacher : Person
+    {
+        // Приватное поле для списка курсов
+        private List<Course> taughtCourses = new List<Course>();
+
+        public Teacher(string name, int age, string contact) : base(name, age, contact) { }
+
+        // Публичный метод для назначения на курс
+        public void AssignToCourse(Course course)
+        {
+            if (!taughtCourses.Contains(course))
+            {
+                taughtCourses.Add(course);
+                course.AssignTeacher(this);
+            }
+        }
