@@ -266,3 +266,16 @@ namespace UniversityManagementSystem
                 }
             }
         }
+        // Вспомогательные методы для меню
+        private static void AddStudent(University university)
+        {
+            Console.Write("Введите имя: ");
+            string name = Console.ReadLine();
+            Console.Write("Введите возраст: ");
+            int age = int.Parse(Console.ReadLine());
+            Console.Write("Введите контакт: ");
+            string contact = Console.ReadLine();
+            Student student = new Student(name, age, contact);
+            university.AddStudent(student);
+            Console.WriteLine("Студент добавлен успешно.");
+        }
