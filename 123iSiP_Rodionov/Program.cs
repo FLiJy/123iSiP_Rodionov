@@ -279,3 +279,17 @@ namespace UniversityManagementSystem
             university.AddStudent(student);
             Console.WriteLine("Студент добавлен успешно.");
         }
+        private static void ViewStudentInfo(University university)
+        {
+            Console.Write("Введите ID студента: ");
+            int id = int.Parse(Console.ReadLine());
+            Student student = university.FindStudentById(id);
+            if (student != null)
+            {
+                Console.WriteLine(student);
+            }
+            else
+            {
+                Console.WriteLine("Студент не найден.");
+            }
+        }
