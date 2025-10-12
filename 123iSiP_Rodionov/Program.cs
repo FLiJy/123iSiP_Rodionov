@@ -182,3 +182,87 @@ namespace UniversityManagementSystem
             }
         }
     }
+    // Основной класс программы
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            University university = new University();
+            bool running = true;
+
+            while (running)
+            {
+                Console.WriteLine("\nМеню системы управления университетом:");
+                Console.WriteLine("1. Добавить студента");
+                Console.WriteLine("2. Просмотреть информацию о студенте");
+                Console.WriteLine("3. Записать студента на курс");
+                Console.WriteLine("4. Просмотреть курсы студента");
+                Console.WriteLine("5. Добавить преподавателя");
+                Console.WriteLine("6. Просмотреть информацию о преподавателе");
+                Console.WriteLine("7. Назначить преподавателя на курс");
+                Console.WriteLine("8. Создать курс");
+                Console.WriteLine("9. Просмотреть информацию о курсе");
+                Console.WriteLine("10. Просмотреть студентов на курсе");
+                Console.WriteLine("11. Список всех студентов");
+                Console.WriteLine("12. Список всех преподавателей");
+                Console.WriteLine("13. Список всех курсов");
+                Console.WriteLine("14. Выход");
+                Console.Write("Введите ваш выбор: ");
+
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            AddStudent(university);
+                            break;
+                        case 2:
+                            ViewStudentInfo(university);
+                            break;
+                        case 3:
+                            EnrollStudentToCourse(university);
+                            break;
+                        case 4:
+                            ViewStudentCourses(university);
+                            break;
+                        case 5:
+                            AddTeacher(university);
+                            break;
+                        case 6:
+                            ViewTeacherInfo(university);
+                            break;
+                        case 7:
+                            AssignTeacherToCourse(university);
+                            break;
+                        case 8:
+                            CreateCourse(university);
+                            break;
+                        case 9:
+                            ViewCourseInfo(university);
+                            break;
+                        case 10:
+                            ViewStudentsInCourse(university);
+                            break;
+                        case 11:
+                            university.ListAllStudents();
+                            break;
+                        case 12:
+                            university.ListAllTeachers();
+                            break;
+                        case 13:
+                            university.ListAllCourses();
+                            break;
+                        case 14:
+                            running = false;
+                            break;
+                        default:
+                            Console.WriteLine("Неверный выбор. Пожалуйста, попробуйте снова.");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Неверный ввод. Пожалуйста, введите число.");
+                }
+            }
+        }
