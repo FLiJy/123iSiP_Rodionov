@@ -346,3 +346,17 @@ namespace UniversityManagementSystem
             university.AddTeacher(teacher);
             Console.WriteLine("Преподаватель добавлен успешно.");
         }
+        private static void ViewTeacherInfo(University university)
+        {
+            Console.Write("Введите ID преподавателя: ");
+            int id = int.Parse(Console.ReadLine());
+            Teacher teacher = university.FindTeacherById(id);
+            if (teacher != null)
+            {
+                Console.WriteLine(teacher);
+            }
+            else
+            {
+                Console.WriteLine("Преподаватель не найден.");
+            }
+        }
