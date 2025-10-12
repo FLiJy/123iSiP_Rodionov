@@ -316,3 +316,21 @@ namespace UniversityManagementSystem
             student.Enroll(course);
             Console.WriteLine("Студент записан успешно.");
         }
+        private static void ViewStudentCourses(University university)
+        {
+            Console.Write("Введите ID студента: ");
+            int id = int.Parse(Console.ReadLine());
+            Student student = university.FindStudentById(id);
+            if (student != null)
+            {
+                Console.WriteLine($"Курсы для {student.Name}:");
+                foreach (var course in student.GetEnrolledCourses())
+                {
+                    Console.WriteLine(course);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Студент не найден.");
+            }
+        }
