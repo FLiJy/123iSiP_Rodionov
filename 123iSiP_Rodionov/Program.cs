@@ -293,3 +293,26 @@ namespace UniversityManagementSystem
                 Console.WriteLine("Студент не найден.");
             }
         }
+        private static void EnrollStudentToCourse(University university)
+        {
+            Console.Write("Введите ID студента: ");
+            int studentId = int.Parse(Console.ReadLine());
+            Student student = university.FindStudentById(studentId);
+            if (student == null)
+            {
+                Console.WriteLine("Студент не найден.");
+                return;
+            }
+
+            Console.Write("Введите ID курса: ");
+            int courseId = int.Parse(Console.ReadLine());
+            Course course = university.FindCourseById(courseId);
+            if (course == null)
+            {
+                Console.WriteLine("Курс не найден.");
+                return;
+            }
+
+            student.Enroll(course);
+            Console.WriteLine("Студент записан успешно.");
+        }
