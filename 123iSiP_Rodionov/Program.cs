@@ -146,3 +146,7 @@ namespace UniversityManagementSystem
         private List<Student> students = new List<Student>();
         private List<Teacher> teachers = new List<Teacher>();
         private List<Course> courses = new List<Course>();
+        // Методы для добавления
+        public void AddStudent(Student student) => students.Add(student);
+        public void AddTeacher(Teacher teacher) => teachers.Add(teacher);
+        public void AddCourse(Course course) => courses.Add(course);
