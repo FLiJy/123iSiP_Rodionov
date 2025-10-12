@@ -13,3 +13,42 @@ namespace UniversityManagementSystem
         private string name;
         private int age;
         private string contact;
+        protected Person(string name, int age, string contact)
+        {
+            this.id = nextId++;
+            this.name = name;
+            this.age = age;
+            this.contact = contact;
+        }
+
+        // Публичные свойства для доступа к данным (инкапсуляция)
+        public int Id => id;
+        public string Name => name;
+        public int Age => age;
+        public string Contact => contact;
+
+        // Абстрактный метод для полиморфизма
+        public abstract string GetRole();
+
+        // Переопределение ToString для полиморфного вывода информации
+        public override string ToString()
+        {
+            return $"ID: {Id}, Имя: {Name}, Возраст: {Age}, Контакт: {Contact}, Роль: {GetRole()}";
+        }
+    }// Класс Student, наследующий от Person
+    public class Student : Person
+    {
+        // Приватное поле для списка курсов
+        private List<Course> enrolledCourses = new List<Course>();
+
+        public Student(string name, int age, string contact) : base(name, age, contact) { }
+
+        // Публичный метод для записи на курс
+        public void Enroll(Course course)
+        {
+            if (!enrolledCourses.Contains(course))
+            {
+                enrolledCourses.Add(course);
+                course.AddStudent(this);
+            }
+        }
