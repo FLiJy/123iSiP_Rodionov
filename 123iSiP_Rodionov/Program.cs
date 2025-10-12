@@ -146,11 +146,11 @@ namespace UniversityManagementSystem
         private List<Student> students = new List<Student>();
         private List<Teacher> teachers = new List<Teacher>();
         private List<Course> courses = new List<Course>();
-      
+
         public void AddStudent(Student student) => students.Add(student);
         public void AddTeacher(Teacher teacher) => teachers.Add(teacher);
         public void AddCourse(Course course) => courses.Add(course);
-       
+
         public Student FindStudentById(int id) => students.Find(s => s.Id == id);
         public Teacher FindTeacherById(int id) => teachers.Find(t => t.Id == id);
         public Course FindCourseById(int id) => courses.Find(c => c.Id == id);
@@ -181,3 +181,4 @@ namespace UniversityManagementSystem
                 Console.WriteLine(course);
             }
         }
+    }
