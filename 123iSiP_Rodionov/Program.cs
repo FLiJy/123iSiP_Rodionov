@@ -81,3 +81,15 @@ namespace UniversityManagementSystem
                 course.AssignTeacher(this);
             }
         }
+        // Публичный метод для получения списка курсов
+        public List<Course> GetTaughtCourses() => new List<Course>(taughtCourses);
+
+        // Реализация абстрактного метода (полиморфизм)
+        public override string GetRole() => "Преподаватель";
+
+        // Переопределение ToString с дополнительной информацией
+        public override string ToString()
+        {
+            return base.ToString() + $", Преподаваемые курсы: {taughtCourses.Count}";
+        }
+    }
