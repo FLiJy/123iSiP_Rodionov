@@ -383,3 +383,47 @@ namespace UniversityManagementSystem
             teacher.AssignToCourse(course);
             Console.WriteLine("Преподаватель назначен успешно.");
         }
+        private static void CreateCourse(University university)
+        {
+            Console.Write("Введите название курса: ");
+            string name = Console.ReadLine();
+            Course course = new Course(name);
+            university.AddCourse(course);
+            Console.WriteLine("Курс создан успешно.");
+        }
+
+        private static void ViewCourseInfo(University university)
+        {
+            Console.Write("Введите ID курса: ");
+            int id = int.Parse(Console.ReadLine());
+            Course course = university.FindCourseById(id);
+            if (course != null)
+            {
+                Console.WriteLine(course);
+            }
+            else
+            {
+                Console.WriteLine("Курс не найден.");
+            }
+        }
+
+        private static void ViewStudentsInCourse(University university)
+        {
+            Console.Write("Введите ID курса: ");
+            int id = int.Parse(Console.ReadLine());
+            Course course = university.FindCourseById(id);
+            if (course != null)
+            {
+                Console.WriteLine($"Студенты на {course.Name}:");
+                foreach (var student in course.GetStudents())
+                {
+                    Console.WriteLine(student);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Курс не найден.");
+            }
+        }
+    }
+}
