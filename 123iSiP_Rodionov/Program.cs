@@ -360,3 +360,26 @@ namespace UniversityManagementSystem
                 Console.WriteLine("Преподаватель не найден.");
             }
         }
+        private static void AssignTeacherToCourse(University university)
+        {
+            Console.Write("Введите ID преподавателя: ");
+            int teacherId = int.Parse(Console.ReadLine());
+            Teacher teacher = university.FindTeacherById(teacherId);
+            if (teacher == null)
+            {
+                Console.WriteLine("Преподаватель не найден.");
+                return;
+            }
+
+            Console.Write("Введите ID курса: ");
+            int courseId = int.Parse(Console.ReadLine());
+            Course course = university.FindCourseById(courseId);
+            if (course == null)
+            {
+                Console.WriteLine("Курс не найден.");
+                return;
+            }
+
+            teacher.AssignToCourse(course);
+            Console.WriteLine("Преподаватель назначен успешно.");
+        }
