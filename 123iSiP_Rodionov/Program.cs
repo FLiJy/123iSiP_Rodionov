@@ -140,3 +140,9 @@ namespace UniversityManagementSystem
             return $"ID: {Id}, Название: {Name}, Преподаватель: {teacherInfo}, Студенты: {students.Count}";
         }
     }
+    // Класс University для управления всеми сущностями
+    public class University
+    {
+        private List<Student> students = new List<Student>();
+        private List<Teacher> teachers = new List<Teacher>();
+        private List<Course> courses = new List<Course>();
