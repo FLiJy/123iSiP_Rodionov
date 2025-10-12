@@ -93,3 +93,50 @@ namespace UniversityManagementSystem
             return base.ToString() + $", Преподаваемые курсы: {taughtCourses.Count}";
         }
     }
+    // Класс Course
+    public class Course
+    {
+        private static int nextId = 1;
+
+        // Приватные поля
+        private int id;
+        private string name;
+        private Teacher teacher;
+        private List<Student> students = new List<Student>();
+
+        public Course(string name)
+        {
+            this.id = nextId++;
+            this.name = name;
+        }
+
+        // Публичные свойства
+        public int Id => id;
+        public string Name => name;
+        public Teacher Teacher => teacher;
+
+        // Метод для добавления студента
+        public void AddStudent(Student student)
+        {
+            if (!students.Contains(student))
+            {
+                students.Add(student);
+            }
+        }
+
+        // Метод для назначения преподавателя
+        public void AssignTeacher(Teacher teacher)
+        {
+            this.teacher = teacher;
+        }
+
+        // Метод для получения списка студентов
+        public List<Student> GetStudents() => new List<Student>(students);
+
+        // Переопределение ToString
+        public override string ToString()
+        {
+            string teacherInfo = teacher != null ? teacher.Name : "Не назначен";
+            return $"ID: {Id}, Название: {Name}, Преподаватель: {teacherInfo}, Студенты: {students.Count}";
+        }
+    }
