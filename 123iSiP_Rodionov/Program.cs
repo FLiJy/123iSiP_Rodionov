@@ -183,5 +183,69 @@ namespace RoguelikeGame
             Console.WriteLine($"Вы получили {damage} урона!"); //вывод
         }
     }
+    class Enemy // класс для врага(хар-ки и лгика атаки)
+    {
+        public string Name; //информация? для врагов(если так можно назвать)
+        public int HP;
+        public int Attack;
+        public int Defense;
+        public double CritChance;
+        public double FreezeChance;
+        public bool IgnoreArmor;
+
+        static Random rnd = new Random(); //общитй генератор для enemy
+
+        public bool IsAlive => HP > 0; //свойство, показывающая жив ли враг
+
+        public bool AttackPlayer(Player player) //метод атаки по врагу
+        {
+            int damage = Attack; //урон 
+            bool froze = false; //заморозка
+
+            if (FreezeChance > 0 && rnd.Next(100) < FreezeChance) //шанс замороозки
+                froze = true; //выпало = заморозка прошла
+
+            if (CritChance > 0 && rnd.Next(100) < CritChance) //шанс крита
+            {
+                damage = (int)(damage * 1.5); //крит урон умнодает урон на 1.5
+                Console.WriteLine("Критический удар!");
+            }
+
+            if (!IgnoreArmor) //игнор брони
+                damage -= player.Armor.DefenseBonus;
+
+            if (damage < 0) damage = 0;
+            player.TakeDamage(damage);//применяем урон к игроку
+            return froze; //возвр был ли эффект заморозки 
+        }
+
+        public static Enemy GenerateEnemy()//метод для обычного врага
+        {
+            int type = rnd.Next(3); // 0, 1 ,2 выбирается случайно
+            switch (type) //в зависимости от числа выбираем конкретный тип врага
+            {
+                case 0: return new Enemy { Name = "Гоблин", HP = 50, Attack = 10, Defense = 3, CritChance = 20 };
+                case 1: return new Enemy { Name = "Скелет", HP = 60, Attack = 12, Defense = 4, IgnoreArmor = true };
+                default: return new Enemy { Name = "Маг", HP = 40, Attack = 9, Defense = 2, FreezeChance = 20 };
+            }
+        }
+
+        public static Enemy GenerateBoss()//метод для боссов
+        {
+            int bossType = rnd.Next(4); // 0, 1 , 2 ,3
+            switch (bossType) //тоже самое
+            {
+                case 0:
+                    return new Enemy { Name = "ВВГ (босс-гоблин)", HP = (int)(50 * 2.0), Attack = (int)(10 * 1.5), Defense = (int)(3 * 1.2), CritChance = 30 };
+                case 1:
+                    return new Enemy { Name = "Ковальский (босс-скелет)", HP = (int)(60 * 2.5), Attack = (int)(12 * 1.3), Defense = (int)(4 * 1.4), IgnoreArmor = true };
+                case 2:
+                    return new Enemy { Name = "Архимаг C++", HP = (int)(40 * 1.8), Attack = (int)(9 * 1.6), Defense = (int)(2 * 1.1), FreezeChance = 30 };
+                default:
+                    return new Enemy { Name = "Пестов С--", HP = (int)(60 * 1.3), Attack = (int)(12 * 1.8), Defense = (int)(4 * 0.6), IgnoreArmor = true, FreezeChance = 35 };
+            }
+        }
+    }
 
    
+
