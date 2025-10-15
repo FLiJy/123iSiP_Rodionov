@@ -120,3 +120,68 @@ namespace RoguelikeGame
             }
         }
     }
+
+    class Player //класс игрока, хранит хп, эквип, и логику действий
+    {
+        public string Name;
+        public int HP;
+        public int MaxHP = 100;
+        public Weapon Weapon;
+        public Armor Armor;
+        public bool Defending = false;
+        Random rnd = new Random(); //локальный для игрока генератор чисел
+
+        public bool IsAlive => HP > 0; // жив ли игрок
+
+        public Player(string name) //конструктор игрока(что идет в базе)
+        {
+            Name = name;
+            HP = MaxHP;
+            Weapon = new Weapon("Кулаки", 5);
+            Armor = new Armor("Обмотки", 3);
+        }
+
+        public int AttackEnemy(Enemy enemy) //метод атаки по врагу
+        {
+            int damage = Weapon.AttackBonus + rnd.Next(5, 15); //Урон = Бонус от оружия +случ часть
+            damage -= enemy.Defense; //усменьшаем урон на броню врага
+            if (damage < 0) damage = 0; //убеждаемся что урон не 0
+            enemy.HP -= damage; // применяем урок
+            return damage; //возвращаем урон(для вывода) нанесенный
+        }
+
+        public void Defend() // для защиты метод
+        {
+            Defending = true; //используется при получении урона
+        }
+
+        public void TakeDamage(int damage) //метод обработки получения урона
+        {
+            if (Defending) //если защищаемся
+            {
+                int dodge = rnd.Next(100); //случ число от 0 до 99
+                if (dodge < 40) // 40 проц на додж
+                {
+                    Console.WriteLine("Вы увернулись от атаки!");
+                    Defending = false; // режим защиты снимается
+                    return;
+                }
+
+                int blockPercent = rnd.Next(70, 101); //случ блок от 70 до 100
+
+                int reducedDamage = Math.Max(0, damage - Armor.DefenseBonus);//уменьшаем урон на знач брони
+
+                int finalDamage = reducedDamage * (100 - blockPercent) / 100; //урон после блока
+
+                Console.WriteLine($"Вы блокировали {blockPercent}% урона!"); //информируем игрока сколько блокировано
+                damage = finalDamage;
+                Defending = false;
+            }
+
+            HP -= damage; //применяем дамаг к здоровью игрока
+            if (HP < 0) HP = 0; // не допускаем отриц значения
+            Console.WriteLine($"Вы получили {damage} урона!"); //вывод
+        }
+    }
+
+   
