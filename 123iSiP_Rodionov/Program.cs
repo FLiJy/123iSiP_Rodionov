@@ -247,5 +247,45 @@ namespace RoguelikeGame
         }
     }
 
-   
+    class Weapon //класс оружие
+    {
+        public string Name; //название
+        public int AttackBonus; //атак бонус от оружия
+
+        public Weapon(string name, int attack) //конструктор оружия
+        {
+            Name = name; //устанвалием имя
+            AttackBonus = attack; //устанавливаем бонус к атаке
+        }
+
+        static string[] names = { "Меч", "Моргенштерн", "Алебарда", "Копьё крестьянина" }; //имена
+        public static Weapon GenerateRandomWeapon() //генератор случайного значения для класса
+        {
+            string name = names[new Random().Next(names.Length)]; //имя
+            int bonus = new Random().Next(5, 20); //случ бонус к атаке от 5 до 19
+            return new Weapon(name, bonus); //обновляем значения
+        }
+    }
+
+    class Armor //класс доспехов
+    {
+        public string Name; //название
+        public int DefenseBonus; // бонус к защите
+
+        public Armor(string name, int def) //конструктор доспехов
+        {
+            Name = name; //устанавливаем название
+            DefenseBonus = def; //устанвливаем бонус к защите
+        }
+
+        static string[] names = { "Тряпки торговца Абиля", "Броня школы петуха", "Кольчюга", "Стальной доспех" };
+        public static Armor GenerateRandomArmor() //генератор случайного доспеха 
+        {
+            string name = names[new Random().Next(names.Length)]; //рандомное имя
+            int bonus = new Random().Next(3, 15);// рандомный бонус к защите
+            return new Armor(name, bonus); //обновляем значение
+        }
+    }
+}
+
 
