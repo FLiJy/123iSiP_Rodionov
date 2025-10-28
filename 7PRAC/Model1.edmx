@@ -1,0 +1,484 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище PR7Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Cars">
+          <Key>
+            <PropertyRef Name="CarID" />
+          </Key>
+          <Property Name="CarID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ClientID" Type="int" Nullable="false" />
+          <Property Name="Make" Type="nvarchar" MaxLength="100" />
+          <Property Name="Model" Type="nvarchar" MaxLength="100" />
+          <Property Name="Plate" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Clients">
+          <Key>
+            <PropertyRef Name="ClientID" />
+          </Key>
+          <Property Name="ClientID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" />
+          <Property Name="Contact" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="Inventory">
+          <Key>
+            <PropertyRef Name="InventoryID" />
+          </Key>
+          <Property Name="InventoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Parts">
+          <Key>
+            <PropertyRef Name="PartID" />
+          </Key>
+          <Property Name="PartID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PartCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PartName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="PurchasePrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="SalePrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PurchaseOrders">
+          <Key>
+            <PropertyRef Name="POID" />
+          </Key>
+          <Property Name="POID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="TotalCost" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="MachinesUntilArrival" Type="int" Nullable="false" />
+          <Property Name="IsApplied" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Repairs">
+          <Key>
+            <PropertyRef Name="RepairID" />
+          </Key>
+          <Property Name="RepairID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ClientID" Type="int" />
+          <Property Name="CarID" Type="int" />
+          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="RepairPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="WorkFee" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="RepairDate" Type="datetime" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Transactions">
+          <Key>
+            <PropertyRef Name="TransactionID" />
+          </Key>
+          <Property Name="TransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TransactionDate" Type="datetime" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <Association Name="FK__Cars__ClientID__4222D4EF">
+          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
+          <End Role="Cars" Type="Self.Cars" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clients">
+              <PropertyRef Name="ClientID" />
+            </Principal>
+            <Dependent Role="Cars">
+              <PropertyRef Name="ClientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Inventory__PartI__3C69FB99">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Inventory" Type="Self.Inventory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="PartID" />
+            </Principal>
+            <Dependent Role="Inventory">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__PartI__4CA06362">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="PartID" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Repairs__CarID__45F365D3">
+          <End Role="Cars" Type="Self.Cars" Multiplicity="0..1" />
+          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cars">
+              <PropertyRef Name="CarID" />
+            </Principal>
+            <Dependent Role="Repairs">
+              <PropertyRef Name="CarID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Repairs__ClientI__44FF419A">
+          <End Role="Clients" Type="Self.Clients" Multiplicity="0..1" />
+          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clients">
+              <PropertyRef Name="ClientID" />
+            </Principal>
+            <Dependent Role="Repairs">
+              <PropertyRef Name="ClientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Repairs__PartID__46E78A0C">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="PartID" />
+            </Principal>
+            <Dependent Role="Repairs">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище PR7ModelContainer">
+          <EntitySet Name="Cars" EntityType="Self.Cars" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Clients" EntityType="Self.Clients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Inventory" EntityType="Self.Inventory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Parts" EntityType="Self.Parts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Repairs" EntityType="Self.Repairs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Transactions" EntityType="Self.Transactions" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Cars__ClientID__4222D4EF" Association="Self.FK__Cars__ClientID__4222D4EF">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Cars" EntitySet="Cars" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Inventory__PartI__3C69FB99" Association="Self.FK__Inventory__PartI__3C69FB99">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Inventory" EntitySet="Inventory" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__PartI__4CA06362" Association="Self.FK__PurchaseO__PartI__4CA06362">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Repairs__CarID__45F365D3" Association="Self.FK__Repairs__CarID__45F365D3">
+            <End Role="Cars" EntitySet="Cars" />
+            <End Role="Repairs" EntitySet="Repairs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Repairs__ClientI__44FF419A" Association="Self.FK__Repairs__ClientI__44FF419A">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Repairs" EntitySet="Repairs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Repairs__PartID__46E78A0C" Association="Self.FK__Repairs__PartID__46E78A0C">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Repairs" EntitySet="Repairs" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="PR7Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Cars">
+          <Key>
+            <PropertyRef Name="CarID" />
+          </Key>
+          <Property Name="CarID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ClientID" Type="Int32" Nullable="false" />
+          <Property Name="Make" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Plate" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Clients" Relationship="Self.FK__Cars__ClientID__4222D4EF" FromRole="Cars" ToRole="Clients" />
+          <NavigationProperty Name="Repairs" Relationship="Self.FK__Repairs__CarID__45F365D3" FromRole="Cars" ToRole="Repairs" />
+        </EntityType>
+        <EntityType Name="Clients">
+          <Key>
+            <PropertyRef Name="ClientID" />
+          </Key>
+          <Property Name="ClientID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Contact" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Cars" Relationship="Self.FK__Cars__ClientID__4222D4EF" FromRole="Clients" ToRole="Cars" />
+          <NavigationProperty Name="Repairs" Relationship="Self.FK__Repairs__ClientI__44FF419A" FromRole="Clients" ToRole="Repairs" />
+        </EntityType>
+        <EntityType Name="Inventory">
+          <Key>
+            <PropertyRef Name="InventoryID" />
+          </Key>
+          <Property Name="InventoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__Inventory__PartI__3C69FB99" FromRole="Inventory" ToRole="Parts" />
+        </EntityType>
+        <EntityType Name="Parts">
+          <Key>
+            <PropertyRef Name="PartID" />
+          </Key>
+          <Property Name="PartID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PartCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PartName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PurchasePrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="SalePrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <NavigationProperty Name="Inventory" Relationship="Self.FK__Inventory__PartI__3C69FB99" FromRole="Parts" ToRole="Inventory" />
+          <NavigationProperty Name="PurchaseOrders" Relationship="Self.FK__PurchaseO__PartI__4CA06362" FromRole="Parts" ToRole="PurchaseOrders" />
+          <NavigationProperty Name="Repairs" Relationship="Self.FK__Repairs__PartID__46E78A0C" FromRole="Parts" ToRole="Repairs" />
+        </EntityType>
+        <EntityType Name="PurchaseOrders">
+          <Key>
+            <PropertyRef Name="POID" />
+          </Key>
+          <Property Name="POID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="TotalCost" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MachinesUntilArrival" Type="Int32" Nullable="false" />
+          <Property Name="IsApplied" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__PurchaseO__PartI__4CA06362" FromRole="PurchaseOrders" ToRole="Parts" />
+        </EntityType>
+        <EntityType Name="Repairs">
+          <Key>
+            <PropertyRef Name="RepairID" />
+          </Key>
+          <Property Name="RepairID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ClientID" Type="Int32" />
+          <Property Name="CarID" Type="Int32" />
+          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="RepairPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="WorkFee" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="RepairDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Cars" Relationship="Self.FK__Repairs__CarID__45F365D3" FromRole="Repairs" ToRole="Cars" />
+          <NavigationProperty Name="Clients" Relationship="Self.FK__Repairs__ClientI__44FF419A" FromRole="Repairs" ToRole="Clients" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__Repairs__PartID__46E78A0C" FromRole="Repairs" ToRole="Parts" />
+        </EntityType>
+        <EntityType Name="Transactions">
+          <Key>
+            <PropertyRef Name="TransactionID" />
+          </Key>
+          <Property Name="TransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK__Cars__ClientID__4222D4EF">
+          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
+          <End Role="Cars" Type="Self.Cars" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clients">
+              <PropertyRef Name="ClientID" />
+            </Principal>
+            <Dependent Role="Cars">
+              <PropertyRef Name="ClientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Repairs__CarID__45F365D3">
+          <End Role="Cars" Type="Self.Cars" Multiplicity="0..1" />
+          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cars">
+              <PropertyRef Name="CarID" />
+            </Principal>
+            <Dependent Role="Repairs">
+              <PropertyRef Name="CarID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Repairs__ClientI__44FF419A">
+          <End Role="Clients" Type="Self.Clients" Multiplicity="0..1" />
+          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clients">
+              <PropertyRef Name="ClientID" />
+            </Principal>
+            <Dependent Role="Repairs">
+              <PropertyRef Name="ClientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Inventory__PartI__3C69FB99">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Inventory" Type="Self.Inventory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="PartID" />
+            </Principal>
+            <Dependent Role="Inventory">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__PartI__4CA06362">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="PartID" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Repairs__PartID__46E78A0C">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="PartID" />
+            </Principal>
+            <Dependent Role="Repairs">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PR7Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Cars" EntityType="Self.Cars" />
+          <EntitySet Name="Clients" EntityType="Self.Clients" />
+          <EntitySet Name="Inventory" EntityType="Self.Inventory" />
+          <EntitySet Name="Parts" EntityType="Self.Parts" />
+          <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrders" />
+          <EntitySet Name="Repairs" EntityType="Self.Repairs" />
+          <EntitySet Name="Transactions" EntityType="Self.Transactions" />
+          <AssociationSet Name="FK__Cars__ClientID__4222D4EF" Association="Self.FK__Cars__ClientID__4222D4EF">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Cars" EntitySet="Cars" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Repairs__CarID__45F365D3" Association="Self.FK__Repairs__CarID__45F365D3">
+            <End Role="Cars" EntitySet="Cars" />
+            <End Role="Repairs" EntitySet="Repairs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Repairs__ClientI__44FF419A" Association="Self.FK__Repairs__ClientI__44FF419A">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Repairs" EntitySet="Repairs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Inventory__PartI__3C69FB99" Association="Self.FK__Inventory__PartI__3C69FB99">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Inventory" EntitySet="Inventory" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__PartI__4CA06362" Association="Self.FK__PurchaseO__PartI__4CA06362">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Repairs__PartID__46E78A0C" Association="Self.FK__Repairs__PartID__46E78A0C">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Repairs" EntitySet="Repairs" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище PR7ModelContainer" CdmEntityContainer="PR7Entities">
+          <EntitySetMapping Name="Cars">
+            <EntityTypeMapping TypeName="PR7Model.Cars">
+              <MappingFragment StoreEntitySet="Cars">
+                <ScalarProperty Name="CarID" ColumnName="CarID" />
+                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
+                <ScalarProperty Name="Make" ColumnName="Make" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Plate" ColumnName="Plate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clients">
+            <EntityTypeMapping TypeName="PR7Model.Clients">
+              <MappingFragment StoreEntitySet="Clients">
+                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Contact" ColumnName="Contact" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Inventory">
+            <EntityTypeMapping TypeName="PR7Model.Inventory">
+              <MappingFragment StoreEntitySet="Inventory">
+                <ScalarProperty Name="InventoryID" ColumnName="InventoryID" />
+                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parts">
+            <EntityTypeMapping TypeName="PR7Model.Parts">
+              <MappingFragment StoreEntitySet="Parts">
+                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="PartCode" ColumnName="PartCode" />
+                <ScalarProperty Name="PartName" ColumnName="PartName" />
+                <ScalarProperty Name="PurchasePrice" ColumnName="PurchasePrice" />
+                <ScalarProperty Name="SalePrice" ColumnName="SalePrice" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseOrders">
+            <EntityTypeMapping TypeName="PR7Model.PurchaseOrders">
+              <MappingFragment StoreEntitySet="PurchaseOrders">
+                <ScalarProperty Name="POID" ColumnName="POID" />
+                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="TotalCost" ColumnName="TotalCost" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="MachinesUntilArrival" ColumnName="MachinesUntilArrival" />
+                <ScalarProperty Name="IsApplied" ColumnName="IsApplied" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Repairs">
+            <EntityTypeMapping TypeName="PR7Model.Repairs">
+              <MappingFragment StoreEntitySet="Repairs">
+                <ScalarProperty Name="RepairID" ColumnName="RepairID" />
+                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
+                <ScalarProperty Name="CarID" ColumnName="CarID" />
+                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="RepairPrice" ColumnName="RepairPrice" />
+                <ScalarProperty Name="WorkFee" ColumnName="WorkFee" />
+                <ScalarProperty Name="RepairDate" ColumnName="RepairDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions">
+            <EntityTypeMapping TypeName="PR7Model.Transactions">
+              <MappingFragment StoreEntitySet="Transactions">
+                <ScalarProperty Name="TransactionID" ColumnName="TransactionID" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

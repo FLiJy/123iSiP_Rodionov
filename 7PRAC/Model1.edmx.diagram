@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="eafb67a7ae714168889bd72887ecbf9a" Name="Diagram1">
+        <EntityTypeShape EntityType="PR7Model.Cars" Width="1.5" PointX="3.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Clients" Width="1.5" PointX="1.5" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Inventory" Width="1.5" PointX="3" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Parts" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.PurchaseOrders" Width="1.5" PointX="3" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Repairs" Width="1.5" PointX="6" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Transactions" Width="1.5" PointX="5.75" PointY="2" IsExpanded="true" />
+        <AssociationConnector Association="PR7Model.FK__Cars__ClientID__4222D4EF" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Repairs__CarID__45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Repairs__ClientI__44FF419A" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Inventory__PartI__3C69FB99" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__PurchaseO__PartI__4CA06362" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Repairs__PartID__46E78A0C" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

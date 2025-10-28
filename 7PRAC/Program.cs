@@ -1,571 +1,329 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace _7PRAC
+// Program.cs
+// Скелет программы автосервиса. Все классы и методы объявлены, но не реализованы.
+// Это первая стадия: декомпозиция + объявление API классов.
+// В следующих шагах сюда будут добавлены реализации и тесты.
+
+// Перечисления
+public enum RepairStatus
 {
-    internal class Program
+    Pending,
+    Completed,
+    Declined,
+    FailedReplacement
+}
+
+public enum TransactionType
+{
+    Income,
+    Expense,
+    Penalty
+}
+
+// Сущность: запчасть (справочник)
+public class Part
+{
+    public int PartID { get; set; }
+    public string PartCode { get; set; }           // например "BRK-001"
+    public string PartName { get; set; }
+    public decimal PurchasePrice { get; set; }    // цена закупки
+    public decimal SalePrice { get; set; }        // цена продажи в ремонте
+
+    // Валидация
+    public bool Validate()
     {
-        static void Main(string[] args)
-        {
-        }
+        // проверяет PartName не пустой, цены >= 0, PartCode не пустой
+        return default;
     }
 }
 
-// Program.cs — весь проект в одном файле
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-
-namespace AutoServiceSingleFile
+// Склад — количество запчастей на складе
+public class InventoryItem
 {
-    // ===== ENUMS =====
-    public enum PartCategory { Engine, Transmission, Electrical, Brake, Suspension, Body, Other }
-    public enum RepairStatus { Pending, InProgress, Completed, Declined, Failed }
-    public enum TransactionType { Income, Expense, Penalty, Purchase }
+    public int InventoryID { get; set; }
+    public Part Part { get; set; }
+    public int Quantity { get; set; }
 
-    // ===== MODELS / ENTITIES =====
-    public class Client
+    public bool Validate()
     {
-        public int Id { get; set; }
-        [Required] public string FullName { get; set; }
-        [Required] public string ContactPhone { get; set; }
-        public string Email { get; set; }
-        public List<Vehicle> Vehicles { get; set; } = new();
+        // Проверка Quantity >= 0 и Part != null
+        return default;
+    }
+}
+
+// Клиент
+public class Client
+{
+    public int ClientID { get; set; }
+    public string Name { get; set; }
+    public string Contact { get; set; } // опционально
+
+    // Создать клиента (валидация)
+    public static Client Create(string name, string contact)
+    {
+        // Проверка входных данных
+        return default;
+    }
+}
+
+// Машина клиента
+public class Car
+{
+    public int CarID { get; set; }
+    public int ClientID { get; set; }
+    public string Make { get; set; }
+    public string Model { get; set; }
+    public string Plate { get; set; }
+
+    // Доп. методы если нужны
+}
+
+// Ремонт (заказ)
+public class RepairJob
+{
+    public int RepairID { get; set; }
+    public Client Client { get; set; }
+    public Car Car { get; set; }
+    public Part RequiredPart { get; set; } // какая деталь сломалась
+    public decimal RepairPrice { get; set; } // цена детали + работа
+    public decimal WorkFee { get; set; }
+    public DateTime RepairDate { get; set; }
+    public RepairStatus Status { get; set; }
+
+    // Описание ремонта для вывода в UI
+    public string Describe()
+    {
+        return default;
+    }
+}
+
+// Заказ на закупку (поступит через N машин)
+public class PurchaseOrder
+{
+    public int POID { get; set; }
+    public Part Part { get; set; }
+    public int Quantity { get; set; }
+    public decimal TotalCost { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public int MachinesUntilArrival { get; set; } // через сколько машин поступит
+    public bool IsApplied { get; set; }
+
+    // Валидация
+    public bool Validate()
+    {
+        return default;
+    }
+}
+
+// Транзакция (финансы)
+public class Transaction
+{
+    public int TransactionID { get; set; }
+    public DateTime TransactionDate { get; set; }
+    public decimal Amount { get; set; } // положительное для дохода, отрицательное для расхода
+    public TransactionType Type { get; set; }
+    public string Description { get; set; }
+}
+
+// Менеджер склада
+public class InventoryManager
+{
+    // Храним локальную копию склада (в реальной реализации синхронизируем с БД)
+    public List<InventoryItem> Items { get; set; } = new List<InventoryItem>();
+
+    public InventoryManager()
+    {
     }
 
-    public class Vehicle
+    // Проверяет, есть ли достаточное количество детали
+    public bool HasPart(int partId, int requiredQty = 1)
     {
-        public int Id { get; set; }
-        [Required] public string LicensePlate { get; set; }
-        public string Model { get; set; }
-        public int OwnerId { get; set; }
-        public Client Owner { get; set; }
+        return default;
     }
 
-    public class Part
+    // Уменьшает количество
+    public void ConsumePart(int partId, int qty)
     {
-        public int Id { get; set; }
-        [Required] public string Name { get; set; }
-        public PartCategory Category { get; set; }
-        [Range(0, double.MaxValue)] public decimal PurchasePrice { get; set; }
-        [Range(0, double.MaxValue)] public decimal SalePrice { get; set; }
-        public string SupplierCode { get; set; }
     }
 
-    public class InventoryItem
+    // Добавляет количество (при поступлении заказа)
+    public void AddPart(int partId, int qty)
     {
-        public int Id { get; set; }
-        public int PartId { get; set; }
-        public Part Part { get; set; }
-        [Range(0, int.MaxValue)] public int Quantity { get; set; }
-        [Range(0, int.MaxValue)] public int Reserved { get; set; }
     }
 
-    public class RepairOrder
+    // Получить текущий список для UI
+    public IEnumerable<InventoryItem> List()
     {
-        public int Id { get; set; }
-        public int ClientId { get; set; }
-        public Client Client { get; set; }
-        public int VehicleId { get; set; }
-        public Vehicle Vehicle { get; set; }
-        public int RequiredPartId { get; set; }
-        public Part RequiredPart { get; set; }
-        [Range(0, double.MaxValue)] public decimal LaborCost { get; set; }
-        [Range(0, double.MaxValue)] public decimal TotalCost { get; set; }
-        public RepairStatus Status { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string Note { get; set; }
+        return default;
+    }
+}
+
+// Менеджер финансов
+public class FinanceManager
+{
+    public decimal Balance { get; set; }
+
+    public FinanceManager(decimal startingBalance)
+    {
+        Balance = startingBalance;
     }
 
-    public class Supplier
+    public void ApplyTransaction(Transaction t)
     {
-        public int Id { get; set; }
-        [Required] public string Name { get; set; }
-        public string Contact { get; set; }
     }
 
-    public class PurchaseOrder
+    public void AddIncome(decimal amount, string description)
     {
-        public int Id { get; set; }
-        public int SupplierId { get; set; }
-        public Supplier Supplier { get; set; }
-        public int RemainingClientCounter { get; set; } // через сколько клиентов придёт поставка
-        public bool IsDelivered { get; set; } = false;
-        public DateTime PlacedAt { get; set; } = DateTime.UtcNow;
-        public List<PurchaseOrderItem> Items { get; set; } = new();
     }
 
-    public class PurchaseOrderItem
+    public void AddExpense(decimal amount, string description)
     {
-        public int Id { get; set; }
-        public int PurchaseOrderId { get; set; }
-        public PurchaseOrder PurchaseOrder { get; set; }
-        public int PartId { get; set; }
-        public Part Part { get; set; }
-        [Range(1, int.MaxValue)] public int Quantity { get; set; }
-        [Range(0, double.MaxValue)] public decimal UnitPrice { get; set; }
+    }
+}
+
+// Менеджер заказов/ремонтов — логика обслуживания клиента
+public class RepairManager
+{
+    private InventoryManager _inventory;
+    private FinanceManager _finance;
+    private List<PurchaseOrder> _pendingOrders; // локально
+
+    // Счётчик машин, нужен для отсчёта поставок (каждый приезд машины уменьшает MachinesUntilArrival)
+    private int _machinesProcessedSinceStart = 0;
+
+    public RepairManager(InventoryManager inventory, FinanceManager finance)
+    {
+        _inventory = inventory;
+        _finance = finance;
+        _pendingOrders = new List<PurchaseOrder>();
     }
 
-    public class Transaction
+    // Обработка клиента: принимает RepairJob, возвращает результат (true если успешно)
+    public bool ProcessClient(RepairJob job)
     {
-        public int Id { get; set; }
-        public TransactionType Type { get; set; }
-        public decimal Amount { get; set; } // positive absolute amount
-        public DateTime OccurredAt { get; set; } = DateTime.UtcNow;
-        public string Description { get; set; }
+        return default;
     }
 
-    // ===== DB CONTEXT =====
-    public class AutoServiceDbContext : DbContext
+    // Отказ клиента — штраф
+    public void DeclineClient(RepairJob job)
     {
-        public DbSet<Client> Clients { get; set; }
-        public DbSet<Vehicle> Vehicles { get; set; }
-        public DbSet<Part> Parts { get; set; }
-        public DbSet<InventoryItem> InventoryItems { get; set; }
-        public DbSet<RepairOrder> RepairOrders { get; set; }
-        public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
-        public DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
-
-        private readonly string _conn;
-
-        public AutoServiceDbContext(string connectionString)
-        {
-            _conn = connectionString;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite(_conn);
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Part>().HasIndex(p => p.Name);
-            modelBuilder.Entity<InventoryItem>().HasOne(i => i.Part).WithMany().HasForeignKey(i => i.PartId).OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Vehicle>().HasOne(v => v.Owner).WithMany(c => c.Vehicles).HasForeignKey(v => v.OwnerId).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<PurchaseOrderItem>().HasOne(i => i.Part).WithMany().HasForeignKey(i => i.PartId).OnDelete(DeleteBehavior.Restrict);
-        }
     }
 
-    // ===== SERVICE: бизнес-логика =====
-    public class AutoServiceService
+    // Создать заказ на покупку
+    public PurchaseOrder PlacePurchaseOrder(int partId, int quantity)
     {
-        private readonly AutoServiceDbContext _db;
-        public AutoServiceService(AutoServiceDbContext db) { _db = db; }
-
-        // Баланс: доходы - (покупки + штрафы + расходы)
-        public decimal GetBalance()
-        {
-            var all = _db.Transactions.ToList();
-            decimal sum = 0m;
-            foreach (var t in all)
-            {
-                if (t.Type == TransactionType.Income) sum += t.Amount;
-                else sum -= t.Amount; // Purchase, Penalty, Expense -> уменьшают баланс
-            }
-            return sum;
-        }
-
-        private void AddTransaction(Transaction tx)
-        {
-            if (tx == null) throw new ArgumentNullException(nameof(tx));
-            _db.Transactions.Add(tx);
-            _db.SaveChanges();
-        }
-
-        // Создать заказ на покупку: деньги списываются сразу (как Purchase), поставка придет через deliveryClients
-        public PurchaseOrder CreatePurchaseOrder(int supplierId, List<PurchaseOrderItem> items, int deliveryClients = 2)
-        {
-            if (items == null || items.Count == 0) throw new ArgumentException("Items required");
-            if (deliveryClients < 0) deliveryClients = 2;
-
-            decimal total = items.Sum(i => i.UnitPrice * i.Quantity);
-            if (total <= 0) throw new ArgumentException("Total must be positive");
-
-            decimal balance = GetBalance();
-            if (balance < total) throw new InvalidOperationException("Недостаточно средств для покупки");
-
-            var po = new PurchaseOrder
-            {
-                SupplierId = supplierId,
-                RemainingClientCounter = deliveryClients,
-                IsDelivered = false
-            };
-            foreach (var it in items)
-            {
-                if (it.Quantity <= 0) throw new ArgumentException("Quantity must be > 0");
-                po.Items.Add(new PurchaseOrderItem { PartId = it.PartId, Quantity = it.Quantity, UnitPrice = it.UnitPrice });
-            }
-
-            _db.PurchaseOrders.Add(po);
-            // списываем деньги
-            AddTransaction(new Transaction
-            {
-                Type = TransactionType.Purchase,
-                Amount = total,
-                Description = $"PurchaseOrder placed (supplier {supplierId})"
-            });
-
-            _db.SaveChanges();
-            return po;
-        }
-
-        // Вызывать при приходе нового клиента: уменьшаем RemainingClientCounter и доставляем, если 0
-        public void ProcessPurchaseDeliveriesOnNewClient()
-        {
-            var pending = _db.PurchaseOrders.Include(p => p.Items).Where(p => !p.IsDelivered).ToList();
-            foreach (var po in pending)
-            {
-                po.RemainingClientCounter = Math.Max(0, po.RemainingClientCounter - 1);
-                if (po.RemainingClientCounter == 0)
-                {
-                    foreach (var it in po.Items)
-                    {
-                        var inv = _db.InventoryItems.SingleOrDefault(i => i.PartId == it.PartId);
-                        if (inv == null)
-                        {
-                            inv = new InventoryItem { PartId = it.PartId, Quantity = it.Quantity, Reserved = 0 };
-                            _db.InventoryItems.Add(inv);
-                        }
-                        else
-                        {
-                            inv.Quantity += it.Quantity;
-                        }
-                    }
-                    po.IsDelivered = true;
-                    AddTransaction(new Transaction
-                    {
-                        Type = TransactionType.Income,
-                        Amount = 0m,
-                        Description = $"PurchaseOrder {po.Id} delivered (inventory updated)"
-                    });
-                }
-            }
-            _db.SaveChanges();
-        }
-
-        // Принять клиента — создаём RepairOrder (без выполнения)
-        public RepairOrder ReceiveClient(int clientId, int vehicleId, int brokenPartId, decimal laborCost)
-        {
-            var client = _db.Clients.Find(clientId) ?? throw new ArgumentException("Client not found");
-            var vehicle = _db.Vehicles.Find(vehicleId) ?? throw new ArgumentException("Vehicle not found");
-            var part = _db.Parts.Find(brokenPartId) ?? throw new ArgumentException("Part not found");
-            if (laborCost < 0) throw new ArgumentException("LaborCost must be >= 0");
-
-            var order = new RepairOrder
-            {
-                ClientId = clientId,
-                VehicleId = vehicleId,
-                RequiredPartId = brokenPartId,
-                LaborCost = laborCost,
-                TotalCost = part.SalePrice + laborCost,
-                Status = RepairStatus.Pending,
-                CreatedAt = DateTime.UtcNow
-            };
-            _db.RepairOrders.Add(order);
-            _db.SaveChanges();
-            return order;
-        }
-
-        // Попытка ремонта:
-        // acceptIfMissingReplaceWithRandom:
-        //   false — если нет детали, считаем отказом (штраф)
-        //   true  — если нет детали, заменяем случайной существующей (если есть) => клиент недоволен => компенсация
-        public bool AttemptRepair(int repairOrderId, bool acceptIfMissingReplaceWithRandom = false)
-        {
-            var order = _db.RepairOrders.Include(r => r.RequiredPart).FirstOrDefault(r => r.Id == repairOrderId)
-                        ?? throw new ArgumentException("Order not found");
-
-            if (order.Status != RepairStatus.Pending) throw new InvalidOperationException("Order in wrong status");
-
-            // проверяем склад
-            var neededInv = _db.InventoryItems.Include(i => i.Part)
-                .FirstOrDefault(i => i.PartId == order.RequiredPartId && (i.Quantity - i.Reserved) > 0);
-
-            if (neededInv != null)
-            {
-                // используем нужную деталь
-                neededInv.Quantity -= 1;
-                order.Status = RepairStatus.Completed;
-                AddTransaction(new Transaction
-                {
-                    Type = TransactionType.Income,
-                    Amount = order.TotalCost,
-                    Description = $"Repair {order.Id} completed (part {order.RequiredPart.Name})"
-                });
-                _db.SaveChanges();
-                return true;
-            }
-            else
-            {
-                if (!acceptIfMissingReplaceWithRandom)
-                {
-                    // отказ — плата за отказ
-                    order.Status = RepairStatus.Declined;
-                    decimal penalty = CalculateRefusalPenalty(order);
-                    AddTransaction(new Transaction
-                    {
-                        Type = TransactionType.Penalty,
-                        Amount = penalty,
-                        Description = $"Service declined for order {order.Id}"
-                    });
-                    _db.SaveChanges();
-                    return false;
-                }
-                else
-                {
-                    // попытка заменить на случайную существующую деталь
-                    var available = _db.InventoryItems.Include(i => i.Part).Where(i => (i.Quantity - i.Reserved) > 0).ToList();
-                    if (!available.Any())
-                    {
-                        order.Status = RepairStatus.Declined;
-                        decimal penaltyNoParts = CalculateRefusalPenalty(order);
-                        AddTransaction(new Transaction
-                        {
-                            Type = TransactionType.Penalty,
-                            Amount = penaltyNoParts,
-                            Description = $"Service declined — no parts available for order {order.Id}"
-                        });
-                        _db.SaveChanges();
-                        return false;
-                    }
-                    var rnd = new Random();
-                    var chosen = available[rnd.Next(available.Count)];
-                    chosen.Quantity -= 1;
-                    order.Status = RepairStatus.Failed; // клиент недоволен
-                    decimal compensation = CalculateCompensation(order);
-                    AddTransaction(new Transaction
-                    {
-                        Type = TransactionType.Penalty,
-                        Amount = compensation,
-                        Description = $"Wrong part used (used {chosen.Part.Name}) for order {order.Id}"
-                    });
-                    _db.SaveChanges();
-                    return false;
-                }
-            }
-        }
-
-        private decimal CalculateRefusalPenalty(RepairOrder order)
-        {
-            return Math.Round(order.TotalCost * 0.2m + 50m, 2);
-        }
-
-        private decimal CalculateCompensation(RepairOrder order)
-        {
-            return Math.Round(order.TotalCost * 1.5m + 100m, 2);
-        }
-
-        // Утилиты для UI
-        public List<InventoryItem> GetInventory() => _db.InventoryItems.Include(i => i.Part).ToList();
-        public List<Part> GetParts() => _db.Parts.ToList();
-        public List<RepairOrder> GetPendingOrders() => _db.RepairOrders.Where(r => r.Status == RepairStatus.Pending).ToList();
-        public List<PurchaseOrder> GetPendingPurchaseOrders() => _db.PurchaseOrders.Include(p => p.Items).Where(p => !p.IsDelivered).ToList();
+        return default;
     }
 
-    // ===== PROGRAM (Console UI) =====
-    class Program
+    // Вызывается при каждом новом клиенте — уменьшает счетчик MachinesUntilArrival и применяет поступившие заказы
+    public void OnNewClientArrived()
     {
-        static void Main(string[] args)
-        {
-            const string conn = "Data Source=autoservice.db";
-            using var db = new AutoServiceDbContext(conn);
-            // Для одного файла удобнее EnsureCreated, чтобы не возиться с миграциями
-            db.Database.EnsureCreated();
+    }
 
-            SeedDataIfEmpty(db);
+    // Применить все заказы, которые пришли (перенести в склад)
+    public void ApplyArrivedOrders()
+    {
+    }
+}
 
-            var service = new AutoServiceService(db);
+// Класс для работы с базой данных MS SQL Server.
+// Обертка над SqlConnection/SqlCommand для CRUD операций.
+// ВАЖНО: Вставьте вашу строку подключения в connectionString.
+public class Database
+{
+    private string _connectionString;
 
-            Console.WriteLine("=== Симулятор автосервиса (всё в одном файле) ===");
-            bool exit = false;
-            while (!exit)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"Баланс: {service.GetBalance():0.00}");
-                Console.WriteLine("1) Принять следующего клиента");
-                Console.WriteLine("2) Купить детали (создать заказ на поставку)");
-                Console.WriteLine("3) Показать склад");
-                Console.WriteLine("4) Показать ожидающие поставки");
-                Console.WriteLine("5) Показать транзакции");
-                Console.WriteLine("6) Выход");
-                Console.Write("Выберите действие: ");
-                var cmd = Console.ReadLine()?.Trim();
+    public Database(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
 
-                try
-                {
-                    switch (cmd)
-                    {
-                        case "1":
-                            HandleNextClient(db, service);
-                            break;
-                        case "2":
-                            HandleBuyParts(db, service);
-                            break;
-                        case "3":
-                            ShowInventory(service);
-                            break;
-                        case "4":
-                            ShowPendingPO(service);
-                            break;
-                        case "5":
-                            ShowTransactions(db);
-                            break;
-                        case "6":
-                            exit = true;
-                            break;
-                        default:
-                            Console.WriteLine("Неверная команда");
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Ошибка: " + ex.Message);
-                }
-            }
+    // Открывает соединение и возвращает SqlConnection (в реальной версии используем using)
+    public SqlConnection GetConnection()
+    {
+        return default;
+    }
 
-            Console.WriteLine("Игра завершена. Пока!");
-        }
+    // Методы загрузки/сохранения справочников и состояний
+    public List<Part> LoadParts()
+    {
+        return default;
+    }
 
-        static void SeedDataIfEmpty(AutoServiceDbContext db)
-        {
-            if (!db.Parts.Any())
-            {
-                var p1 = new Part { Name = "Тормозные колодки", Category = PartCategory.Brake, PurchasePrice = 200m, SalePrice = 400m };
-                var p2 = new Part { Name = "Свеча зажигания", Category = PartCategory.Electrical, PurchasePrice = 50m, SalePrice = 150m };
-                var p3 = new Part { Name = "Фильтр масляный", Category = PartCategory.Engine, PurchasePrice = 80m, SalePrice = 200m };
-                db.Parts.AddRange(p1, p2, p3);
-                db.SaveChanges();
+    public void SavePart(Part p)
+    {
+    }
 
-                db.InventoryItems.Add(new InventoryItem { PartId = p1.Id, Quantity = 3, Reserved = 0 });
-                db.InventoryItems.Add(new InventoryItem { PartId = p2.Id, Quantity = 5, Reserved = 0 });
-                db.InventoryItems.Add(new InventoryItem { PartId = p3.Id, Quantity = 1, Reserved = 0 });
+    public List<InventoryItem> LoadInventory()
+    {
+        return default;
+    }
 
-                db.Clients.Add(new Client { FullName = "Иван Иванов", ContactPhone = "+70000000001", Email = "ivan@example.com" });
-                db.Clients.Add(new Client { FullName = "Петр Петров", ContactPhone = "+70000000002", Email = "petr@example.com" });
-                db.SaveChanges();
+    public void SaveInventoryItem(InventoryItem item)
+    {
+    }
 
-                var c1 = db.Clients.First();
-                var c2 = db.Clients.Skip(1).First();
-                db.Vehicles.Add(new Vehicle { OwnerId = c1.Id, LicensePlate = "A111AA", Model = "Lada" });
-                db.Vehicles.Add(new Vehicle { OwnerId = c2.Id, LicensePlate = "B222BB", Model = "Toyota" });
+    public List<RepairJob> LoadRepairs()
+    {
+        return default;
+    }
 
-                db.Transactions.Add(new Transaction { Type = TransactionType.Income, Amount = 2000m, Description = "Start balance" });
+    public void SaveRepair(RepairJob r)
+    {
+    }
 
-                db.SaveChanges();
-            }
-        }
+    public void SaveTransaction(Transaction t)
+    {
+    }
 
-        static void HandleNextClient(AutoServiceDbContext db, AutoServiceService service)
-        {
-            // перед обработкой нового клиента — уменьшаем счетчики поставок и доставляем, если нужно
-            service.ProcessPurchaseDeliveriesOnNewClient();
+    public void SavePurchaseOrder(PurchaseOrder po)
+    {
+    }
 
-            // простая логика: берем случайного клиента и случайную поломку
-            var client = db.Clients.Include(c => c.Vehicles).First();
-            var vehicle = db.Vehicles.First(v => v.OwnerId == client.Id);
-            var parts = db.Parts.ToList();
-            var rnd = new Random();
-            var brokenPart = parts[rnd.Next(parts.Count)];
+    public List<PurchaseOrder> LoadPendingPurchaseOrders()
+    {
+        return default;
+    }
+}
 
-            Console.WriteLine($"Клиент: {client.FullName}, авто: {vehicle.Model} ({vehicle.LicensePlate})");
-            Console.WriteLine($"Сломалась деталь: {brokenPart.Name}. Цена детали: {brokenPart.SalePrice:0.00}");
-            decimal labor = Math.Round((decimal)rnd.Next(100, 501), 2);
-            Console.WriteLine($"Оплата за работу: {labor:0.00}. Итого клиент готов заплатить: {brokenPart.SalePrice + labor:0.00}");
+// Консольный UI — меню и ввод пользователя
+public static class ConsoleUI
+{
+    public static void ShowMainMenu()
+    {
+    }
 
-            var order = service.ReceiveClient(client.Id, vehicle.Id, brokenPart.Id, labor);
+    public static string ReadNonEmptyString(string prompt)
+    {
+        return default;
+    }
 
-            Console.Write("Принимаем заказ? (y = принять / n = отказ / a = принять даже если нет нужной детали): ");
-            var answer = Console.ReadLine()?.Trim().ToLower();
-            if (answer == "n")
-            {
-                service.AttemptRepair(order.Id, acceptIfMissingReplaceWithRandom: false);
-                Console.WriteLine("Вы отказали клиенту (штраф).");
-                return;
-            }
-            if (answer == "a")
-            {
-                var ok = service.AttemptRepair(order.Id, acceptIfMissingReplaceWithRandom: true);
-                if (ok) Console.WriteLine("Ремонт успешно выполнен.");
-                else Console.WriteLine("Ремонт завершился неправильно — удержана компенсация.");
-                return;
-            }
-            // по умолчанию — принять, но не соглашаться на замену другой деталью
-            var success = service.AttemptRepair(order.Id, acceptIfMissingReplaceWithRandom: false);
-            if (success) Console.WriteLine("Ремонт успешно выполнен.");
-            else Console.WriteLine("Нужной детали нет — отказ (штраф).");
-        }
+    public static int ReadInt(string prompt, int min, int max)
+    {
+        return default;
+    }
 
-        static void HandleBuyParts(AutoServiceDbContext db, AutoServiceService service)
-        {
-            var parts = db.Parts.ToList();
-            Console.WriteLine("Доступные детали:");
-            foreach (var p in parts) Console.WriteLine($"{p.Id}) {p.Name} — цена закупки {p.PurchasePrice:0.00}");
+    public static decimal ReadDecimal(string prompt, decimal min)
+    {
+        return default;
+    }
+}
 
-            Console.Write("Введите id детали для покупки: ");
-            if (!int.TryParse(Console.ReadLine(), out int partId)) { Console.WriteLine("Неверный id"); return; }
-            var part = db.Parts.Find(partId);
-            if (part == null) { Console.WriteLine("Не найдено"); return; }
+// Главный класс программы
+public class Program
+{
+    // Строка подключения. Замените {YOUR_CONN_STRING} на реальную строку.
+    // Пример: "Server=YOUR_SERVER;Database=AutoServiceDB;Trusted_Connection=True;"
+    private const string ConnectionStringPlaceholder = "{YOUR_CONN_STRING}";
 
-            Console.Write("Введите количество: ");
-            if (!int.TryParse(Console.ReadLine(), out int qty) || qty <= 0) { Console.WriteLine("Неверное количество"); return; }
-
-            // выбираем/создаём поставщика-заглушку
-            var supplier = db.Suppliers.FirstOrDefault();
-            if (supplier == null)
-            {
-                supplier = new Supplier { Name = "Default Supplier", Contact = "supplier@example.com" };
-                db.Suppliers.Add(supplier);
-                db.SaveChanges();
-            }
-
-            var po = service.CreatePurchaseOrder(supplier.Id, new List<PurchaseOrderItem> {
-                new PurchaseOrderItem { PartId = partId, Quantity = qty, UnitPrice = part.PurchasePrice }
-            }, deliveryClients: 2);
-
-            Console.WriteLine($"Заказ создан (PO {po.Id}). Поставка придет через {po.RemainingClientCounter} клиентов.");
-        }
-
-        static void ShowInventory(AutoServiceService service)
-        {
-            var inv = service.GetInventory();
-            Console.WriteLine("Склад:");
-            foreach (var it in inv)
-            {
-                Console.WriteLine($"{it.Id}) {it.Part.Name} — Количество: {it.Quantity} (Reserved: {it.Reserved})");
-            }
-        }
-
-        static void ShowPendingPO(AutoServiceService service)
-        {
-            var pos = service.GetPendingPurchaseOrders();
-            Console.WriteLine("Ожидающие поставки:");
-            foreach (var p in pos)
-            {
-                Console.WriteLine($"PO {p.Id} -> Remaining clients: {p.RemainingClientCounter}, Items:");
-                foreach (var it in p.Items)
-                {
-                    Console.WriteLine($"   PartId {it.PartId} x {it.Quantity} (unit {it.UnitPrice:0.00})");
-                }
-            }
-        }
-
-        static void ShowTransactions(AutoServiceDbContext db)
-        {
-            var txs = db.Transactions.OrderByDescending(t => t.OccurredAt).Take(50).ToList();
-            Console.WriteLine("Транзакции (последние):");
-            foreach (var t in txs)
-            {
-                Console.WriteLine($"{t.OccurredAt:yyyy-MM-dd HH:mm} | {t.Type} | {t.Amount:0.00} | {t.Description}");
-            }
-        }
+    public static void Main(string[] args)
+    {
+        // Здесь мы будем: 1) инициализировать DB, 2) загрузить справочники/склад, 3) показать меню и обрабатывать клиентов.
+        // На данный момент метод пуст — это точка старта для следующего этапа.
     }
 }
