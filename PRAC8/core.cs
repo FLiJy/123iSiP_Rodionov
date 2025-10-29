@@ -8,6 +8,6 @@ namespace PRAC8
 {
     public class Core
     {
-        public static Rodionov8PRACEntities1 Context = new Rodionov8PRACEntities1();
+        public static Rodionov8PRACEntities2 Context = new Rodionov8PRACEntities2();
     }
 }
