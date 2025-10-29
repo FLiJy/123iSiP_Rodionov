@@ -1,20 +1,19 @@
-﻿using System;
+﻿using _7PRAC;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 
+// Основной класс симулятора автосервиса
 class CarRepairSimulator
 {
     private int balance;
     private Dictionary<string, int> stock;
     private List<SupplyOrder> suppliesInTransit;
     private Random rng;
-    private string dbConnection;
     private int sessionId;
 
     public CarRepairSimulator(int initialBalance)
     {
-        dbConnection = $"Server=bd-kip.fa.ru;Database=Rodionov7PRACTIKA;User Id=sa;Password=1qaz!QAZ;";
         balance = initialBalance;
         stock = new Dictionary<string, int>();
         suppliesInTransit = new List<SupplyOrder>();
@@ -24,31 +23,30 @@ class CarRepairSimulator
 
     private void StartNewSession()
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
             // Создаем новую игровую сессию
-            string sql = @"INSERT INTO GameSessions (StartMoney, CurrentMoney, CreatedDate, LastUpdate)
-                          OUTPUT INSERTED.Id
-                          VALUES (@StartMoney, @CurrentMoney, GETDATE(), GETDATE())";
-            using (var cmd = new SqlCommand(sql, connection))
+            var newSession = new GameSessions
             {
-                cmd.Parameters.AddWithValue("@StartMoney", balance);
-                cmd.Parameters.AddWithValue("@CurrentMoney", balance);
-                sessionId = (int)cmd.ExecuteScalar();
-            }
+                StartMoney = balance,
+                CurrentMoney = balance,
+                CreatedDate = DateTime.Now,
+                LastUpdate = DateTime.Now
+            };
+
+            context.GameSessions.Add(newSession);
+            context.SaveChanges();
+            sessionId = newSession.Id;
+
             // Загружаем начальные детали из таблицы Parts
-            sql = "SELECT Name, InitialQuantity FROM Parts WHERE IsActive = 1 AND InitialQuantity > 0";
-            using (var cmd = new SqlCommand(sql, connection))
-            using (var reader = cmd.ExecuteReader())
+            var initialParts = context.Parts
+                .Where(p => p.IsActive && p.InitialQuantity > 0)
+                .ToList();
+
+            foreach (var part in initialParts)
             {
-                while (reader.Read())
-                {
-                    string partName = reader["Name"].ToString();
-                    int initialQuantity = (int)reader["InitialQuantity"];
-                    stock[partName] = initialQuantity;
-                    UpdateStockInDb(partName, initialQuantity);
-                }
+                stock[part.Name] = part.InitialQuantity;
+                UpdateStockInDb(part.Name, part.InitialQuantity);
             }
         }
     }
@@ -67,9 +65,11 @@ class CarRepairSimulator
             Console.WriteLine($"=== КЛИЕНТ №{customerCount} ===");
             HandleIncomingSupplies();
             DisplayCurrentStatus();
+
             string faultyPart = PickRandomFault();
             int partCost = FetchPartCost(faultyPart);
             int fixPrice = partCost + rng.Next(200, 800);
+
             Console.WriteLine($"\nПоломка: {faultyPart}");
             Console.WriteLine($"Стоимость ремонта: {fixPrice} руб.");
             Console.WriteLine("\nВаши действия:");
@@ -99,6 +99,7 @@ class CarRepairSimulator
                     Console.ReadKey();
                     continue;
             }
+
             customerCount++;
             Console.WriteLine("Нажмите любую клавишу для следующего клиента...");
             Console.ReadKey();
@@ -107,39 +108,46 @@ class CarRepairSimulator
 
     private void HandleIncomingSupplies()
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
             // Получаем заказы, готовые к доставке
-            string sql = "SELECT Id, PartName, Quantity FROM PurchaseOrders WHERE GameId = @GameId AND DeliveryCounter <= 0";
-            using (var cmd = new SqlCommand(sql, connection))
+            var readyOrders = context.PurchaseOrders
+                .Where(po => po.GameId == sessionId && po.DeliveryCounter <= 0)
+                .ToList();
+
+            foreach (var order in readyOrders)
             {
-                cmd.Parameters.AddWithValue("@GameId", sessionId);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string partName = reader["PartName"].ToString();
-                        int quantity = (int)reader["Quantity"];
-                        int orderId = (int)reader["Id"];
-                        if (stock.ContainsKey(partName))
-                            stock[partName] += quantity;
-                        else
-                            stock[partName] = quantity;
-                        Console.WriteLine($"✓ Доставлены {quantity} {partName}");
-                        UpdateStockInDb(partName, stock[partName]);
-                        RemoveSupplyOrder(orderId);
-                    }
-                }
+                if (stock.ContainsKey(order.PartName))
+                    stock[order.PartName] += order.Quantity;
+                else
+                    stock[order.PartName] = order.Quantity;
+
+                Console.WriteLine($"✓ Доставлены {order.Quantity} {order.PartName}");
+                UpdateStockInDb(order.PartName, stock[order.PartName]);
+
+                context.PurchaseOrders.Remove(order);
             }
+
             // Уменьшаем счетчик доставки для остальных заказов
-            sql = "UPDATE PurchaseOrders SET DeliveryCounter = DeliveryCounter - 1 WHERE GameId = @GameId AND DeliveryCounter > 0";
-            using (var cmd = new SqlCommand(sql, connection))
+            var pendingOrders = context.PurchaseOrders
+                .Where(po => po.GameId == sessionId && po.DeliveryCounter > 0)
+                .ToList();
+
+            foreach (var order in pendingOrders)
+                order.DeliveryCounter--;
+
+            try
             {
-                cmd.Parameters.AddWithValue("@GameId", sessionId);
-                cmd.ExecuteNonQuery();
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обновлении заказов: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
             }
         }
+
         RefreshLocalSupplies();
     }
 
@@ -154,49 +162,36 @@ class CarRepairSimulator
         else
         {
             foreach (var item in stock)
-            {
                 Console.WriteLine($" {item.Key}: {item.Value} шт.");
-            }
         }
+
         DisplayPendingSupplies();
     }
 
     private string PickRandomFault()
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = "SELECT Name FROM Parts WHERE IsActive = 1";
-            using (var cmd = new SqlCommand(sql, connection))
-            using (var reader = cmd.ExecuteReader())
+            var parts = context.Parts
+                .Where(p => p.IsActive)
+                .Select(p => p.Name)
+                .ToList();
+
+            if (parts.Count > 0)
             {
-                List<string> parts = new List<string>();
-                while (reader.Read())
-                {
-                    parts.Add(reader["Name"].ToString());
-                }
-                if (parts.Count > 0)
-                {
-                    int index = rng.Next(parts.Count);
-                    return parts[index];
-                }
+                int index = rng.Next(parts.Count);
+                return parts[index];
             }
         }
-        return "тормозные колодки"; // Default fallback
+        return "тормозные колодки"; // fallback
     }
 
     private int FetchPartCost(string partName)
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = "SELECT Price FROM Parts WHERE Name = @Name";
-            using (var cmd = new SqlCommand(sql, connection))
-            {
-                cmd.Parameters.AddWithValue("@Name", partName);
-                var result = cmd.ExecuteScalar();
-                return result != null ? (int)result : 500;
-            }
+            var part = context.Parts.FirstOrDefault(p => p.Name == partName);
+            return part?.Price ?? 500;
         }
     }
 
@@ -204,30 +199,28 @@ class CarRepairSimulator
     {
         if (stock.ContainsKey(faultyPart) && stock[faultyPart] > 0)
         {
-            // Successful fix
             stock[faultyPart]--;
             balance += fixPrice;
             UpdateStockInDb(faultyPart, stock[faultyPart]);
             PersistSessionState();
             RecordDeal(customerCount, faultyPart, fixPrice, "success");
-            Console.WriteLine($"Успешный ремонт! Вы заработали {fixPrice} руб.");
+            Console.WriteLine($"Успешный ремонт! +{fixPrice} руб.");
         }
         else
         {
-            // Failed attempt
-            Console.WriteLine("Нужной детали нет на складе! Производится замена случайной деталью...");
+            Console.WriteLine("Детали нет на складе...");
             if (stock.Count > 0)
             {
-                string substitutePart = stock.Keys.First();
-                stock[substitutePart]--;
-                if (stock[substitutePart] == 0)
-                    stock.Remove(substitutePart);
+                string substitute = stock.Keys.First();
+                stock[substitute]--;
+                if (stock[substitute] == 0)
+                    stock.Remove(substitute);
                 int fine = fixPrice + 1000;
                 balance -= fine;
-                UpdateStockInDb(substitutePart, stock.ContainsKey(substitutePart) ? stock[substitutePart] : 0);
+                UpdateStockInDb(substitute, stock.ContainsKey(substitute) ? stock[substitute] : 0);
                 PersistSessionState();
                 RecordDeal(customerCount, faultyPart, -fine, "failed");
-                Console.WriteLine($"Клиент недоволен! Штраф: {fine} руб.");
+                Console.WriteLine($"Штраф: {fine} руб.");
             }
             else
             {
@@ -235,7 +228,7 @@ class CarRepairSimulator
                 balance -= fine;
                 PersistSessionState();
                 RecordDeal(customerCount, faultyPart, -fine, "no_parts");
-                Console.WriteLine($"На складе нет деталей! Штраф: {fine} руб.");
+                Console.WriteLine($"Штраф: {fine} руб.");
             }
         }
     }
@@ -246,7 +239,7 @@ class CarRepairSimulator
         balance -= fine;
         PersistSessionState();
         RecordDeal(customerCount, "refusal", -fine, "refused");
-        Console.WriteLine($"Вы отказали клиенту. Штраф: {fine} руб.");
+        Console.WriteLine($"Вы отказали клиенту. Штраф {fine} руб.");
     }
 
     private void OpenSupplyMenu()
@@ -255,97 +248,79 @@ class CarRepairSimulator
         {
             Console.Clear();
             Console.WriteLine("=== ЗАКУПКА ЗАПЧАСТЕЙ ===");
-            Console.WriteLine($"Баланс: {balance} руб.");
-            Console.WriteLine("\nДоступные запчасти:");
+            Console.WriteLine($"Баланс: {balance} руб.\n");
+
             var availableParts = FetchAvailableParts();
-            int index = 1;
+            int i = 1;
             foreach (var part in availableParts)
             {
-                Console.WriteLine($"{index} - {part.Name}: {part.Price} руб./шт.");
-                index++;
+                Console.WriteLine($"{i} - {part.Name}: {part.Price} руб./шт.");
+                i++;
             }
-            Console.WriteLine($"{index} - Вернуться к клиенту");
-            Console.Write("\nВыберите деталь для заказа: ");
+            Console.WriteLine($"{i} - Вернуться к клиенту");
+            Console.Write("\nВыбор: ");
             string input = Console.ReadLine();
-            if (int.TryParse(input, out int selection))
+
+            if (int.TryParse(input, out int sel))
             {
-                if (selection == index)
-                    break;
-                if (selection >= 1 && selection <= availableParts.Count)
+                if (sel == i) break;
+                if (sel >= 1 && sel <= availableParts.Count)
                 {
-                    var chosenPart = availableParts[selection - 1];
-                    Console.Write($"Сколько {chosenPart.Name} закупить? ");
+                    var chosen = availableParts[sel - 1];
+                    Console.Write($"Сколько {chosen.Name} закупить? ");
                     if (int.TryParse(Console.ReadLine(), out int amount) && amount > 0)
                     {
-                        int total = chosenPart.Price * amount;
+                        int total = chosen.Price * amount;
                         if (total <= balance)
                         {
                             balance -= total;
-                            PlaceSupplyOrder(chosenPart.Name, amount);
+                            PlaceSupplyOrder(chosen.Name, amount);
                             PersistSessionState();
-                            Console.WriteLine($"Заказ на {amount} {chosenPart.Name} оформлен! Доставка через 2 клиента.");
-                            Console.WriteLine($"Списано: {total} руб.");
+                            Console.WriteLine($"Заказ оформлен! Списано {total} руб.");
                         }
-                        else
-                        {
-                            Console.WriteLine("Недостаточно денег!");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Неверное количество!");
+                        else Console.WriteLine("Недостаточно средств!");
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Неверный выбор!");
-                }
             }
-            else
-            {
-                Console.WriteLine("Неверный ввод!");
-            }
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            Console.WriteLine("Нажмите любую клавишу...");
             Console.ReadKey();
         }
     }
 
     private List<Part> FetchAvailableParts()
     {
-        var partsList = new List<Part>();
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = "SELECT Name, Price FROM Parts WHERE IsActive = 1";
-            using (var cmd = new SqlCommand(sql, connection))
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    partsList.Add(new Part
-                    {
-                        Name = reader["Name"].ToString(),
-                        Price = (int)reader["Price"]
-                    });
-                }
-            }
+            return context.Parts
+                .Where(p => p.IsActive)
+                .Select(p => new Part { Name = p.Name, Price = p.Price })
+                .ToList();
         }
-        return partsList;
     }
 
     private void PlaceSupplyOrder(string partName, int amount)
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = @"INSERT INTO PurchaseOrders (GameId, PartName, Quantity, DeliveryCounter, OrderDate)
-                          VALUES (@GameId, @PartName, @Quantity, 2, GETDATE())";
-            using (var cmd = new SqlCommand(sql, connection))
+            var order = new PurchaseOrders
             {
-                cmd.Parameters.AddWithValue("@GameId", sessionId);
-                cmd.Parameters.AddWithValue("@PartName", partName);
-                cmd.Parameters.AddWithValue("@Quantity", amount);
-                cmd.ExecuteNonQuery();
+                GameId = sessionId,
+                PartName = partName,
+                Quantity = amount,
+                DeliveryCounter = 2,
+                OrderDate = DateTime.Now
+            };
+            context.PurchaseOrders.Add(order);
+
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при создании заказа: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
             }
         }
         RefreshLocalSupplies();
@@ -353,71 +328,81 @@ class CarRepairSimulator
 
     private void UpdateStockInDb(string partName, int amount)
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string checkSql = "SELECT COUNT(*) FROM Inventory WHERE GameId = @GameId AND PartName = @PartName";
-            using (var checkCmd = new SqlCommand(checkSql, connection))
+            var inventory = context.Inventory
+                .FirstOrDefault(i => i.GameId == sessionId && i.PartName == partName);
+
+            if (inventory != null)
+                inventory.Quantity = amount;
+            else
+                context.Inventory.Add(new Inventory
+                {
+                    GameId = sessionId,
+                    PartName = partName,
+                    Quantity = amount
+                });
+
+            try
             {
-                checkCmd.Parameters.AddWithValue("@GameId", sessionId);
-                checkCmd.Parameters.AddWithValue("@PartName", partName);
-                int exists = (int)checkCmd.ExecuteScalar();
-                if (exists > 0)
-                {
-                    string updateSql = "UPDATE Inventory SET Quantity = @Quantity WHERE GameId = @GameId AND PartName = @PartName";
-                    using (var updateCmd = new SqlCommand(updateSql, connection))
-                    {
-                        updateCmd.Parameters.AddWithValue("@Quantity", amount);
-                        updateCmd.Parameters.AddWithValue("@GameId", sessionId);
-                        updateCmd.Parameters.AddWithValue("@PartName", partName);
-                        updateCmd.ExecuteNonQuery();
-                    }
-                }
-                else
-                {
-                    string insertSql = "INSERT INTO Inventory (GameId, PartName, Quantity) VALUES (@GameId, @PartName, @Quantity)";
-                    using (var insertCmd = new SqlCommand(insertSql, connection))
-                    {
-                        insertCmd.Parameters.AddWithValue("@GameId", sessionId);
-                        insertCmd.Parameters.AddWithValue("@PartName", partName);
-                        insertCmd.Parameters.AddWithValue("@Quantity", amount);
-                        insertCmd.ExecuteNonQuery();
-                    }
-                }
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обновлении склада: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
             }
         }
     }
 
     private void PersistSessionState()
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = "UPDATE GameSessions SET CurrentMoney = @CurrentMoney, LastUpdate = GETDATE() WHERE Id = @Id";
-            using (var cmd = new SqlCommand(sql, connection))
+            var session = context.GameSessions.FirstOrDefault(gs => gs.Id == sessionId);
+            if (session != null)
             {
-                cmd.Parameters.AddWithValue("@CurrentMoney", balance);
-                cmd.Parameters.AddWithValue("@Id", sessionId);
-                cmd.ExecuteNonQuery();
+                session.CurrentMoney = balance;
+                session.LastUpdate = DateTime.Now;
+
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка при сохранении сессии: {ex.Message}");
+                    if (ex.InnerException != null)
+                        Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
+                }
             }
         }
     }
 
     private void RecordDeal(int customerCount, string partName, int value, string outcome)
     {
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = @"INSERT INTO Transactions (GameId, ClientNumber, PartName, Amount, Status, TransactionDate)
-                          VALUES (@GameId, @ClientNumber, @PartName, @Amount, @Status, GETDATE())";
-            using (var cmd = new SqlCommand(sql, connection))
+            var transaction = new Transactions
             {
-                cmd.Parameters.AddWithValue("@GameId", sessionId);
-                cmd.Parameters.AddWithValue("@ClientNumber", customerCount);
-                cmd.Parameters.AddWithValue("@PartName", partName);
-                cmd.Parameters.AddWithValue("@Amount", value);
-                cmd.Parameters.AddWithValue("@Status", outcome);
-                cmd.ExecuteNonQuery();
+                GameId = sessionId,
+                ClientNumber = customerCount,
+                PartName = partName,
+                Amount = value,
+                Status = outcome,
+                TransactionDate = DateTime.Now
+            };
+            context.Transactions.Add(transaction);
+
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"уйди отсю.да");
+                
             }
         }
     }
@@ -425,24 +410,19 @@ class CarRepairSimulator
     private void RefreshLocalSupplies()
     {
         suppliesInTransit.Clear();
-        using (var connection = new SqlConnection(dbConnection))
+        using (var context = new Rodionov7PRACTIKAEntities4())
         {
-            connection.Open();
-            string sql = "SELECT PartName, Quantity, DeliveryCounter FROM PurchaseOrders WHERE GameId = @GameId";
-            using (var cmd = new SqlCommand(sql, connection))
+            var supplies = context.PurchaseOrders
+                .Where(po => po.GameId == sessionId)
+                .ToList();
+
+            foreach (var supply in supplies)
             {
-                cmd.Parameters.AddWithValue("@GameId", sessionId);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        suppliesInTransit.Add(new SupplyOrder(
-                            reader["PartName"].ToString(),
-                            (int)reader["Quantity"],
-                            (int)reader["DeliveryCounter"]
-                        ));
-                    }
-                }
+                suppliesInTransit.Add(new SupplyOrder(
+                    supply.PartName,
+                    supply.Quantity,
+                    supply.DeliveryCounter
+                ));
             }
         }
     }
@@ -452,39 +432,24 @@ class CarRepairSimulator
         if (suppliesInTransit.Count > 0)
         {
             Console.WriteLine("\nОжидаются поставки:");
-            foreach (var supply in suppliesInTransit)
-            {
-                Console.WriteLine($" {supply.PartName}: {supply.Quantity} шт. (через {supply.DeliveryCounter} клиентов)");
-            }
-        }
-    }
-
-    private void RemoveSupplyOrder(int orderId)
-    {
-        using (var connection = new SqlConnection(dbConnection))
-        {
-            connection.Open();
-            string sql = "DELETE FROM PurchaseOrders WHERE Id = @Id";
-            using (var cmd = new SqlCommand(sql, connection))
-            {
-                cmd.Parameters.AddWithValue("@Id", orderId);
-                cmd.ExecuteNonQuery();
-            }
+            foreach (var s in suppliesInTransit)
+                Console.WriteLine($" {s.PartName}: {s.Quantity} шт. (через {s.DeliveryCounter} клиентов)");
         }
     }
 }
 
+// Вспомогательные классы
 class SupplyOrder
 {
     public string PartName { get; set; }
     public int Quantity { get; set; }
     public int DeliveryCounter { get; set; }
 
-    public SupplyOrder(string partName, int quantity, int deliveryCounter)
+    public SupplyOrder(string name, int qty, int counter)
     {
-        PartName = partName;
-        Quantity = quantity;
-        DeliveryCounter = deliveryCounter;
+        PartName = name;
+        Quantity = qty;
+        DeliveryCounter = counter;
     }
 }
 
@@ -494,6 +459,7 @@ class Part
     public int Price { get; set; }
 }
 
+// Точка входа
 class Program
 {
     static void Main(string[] args)
@@ -501,13 +467,15 @@ class Program
         try
         {
             Console.WriteLine("Добро пожаловать в автосервис!");
-            CarRepairSimulator simulator = new CarRepairSimulator(5000);
+            var simulator = new CarRepairSimulator(5000);
             simulator.StartSimulation();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка: {ex.Message}");
-            Console.WriteLine("Проверьте подключение к базе данных SQL Server и правильность логина/пароля");
+            Console.WriteLine($"Критическая ошибка: {ex.Message}");
+            Console.WriteLine("Проверьте подключение к базе данных");
+            Console.WriteLine("Детали: " + ex.ToString());
+            Console.ReadKey();
         }
     }
 }

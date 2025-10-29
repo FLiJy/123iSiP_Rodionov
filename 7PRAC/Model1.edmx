@@ -299,7 +299,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="Rodionov7PRACTIKAEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="Rodionov7PRACTIKAEntities4" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="GameSessions" EntityType="Self.GameSessions" />
           <EntitySet Name="Inventory" EntityType="Self.Inventory" />
           <EntitySet Name="Parts" EntityType="Self.Parts" />
@@ -335,7 +335,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="Хранилище Rodionov7PRACTIKAModelContainer" CdmEntityContainer="Rodionov7PRACTIKAEntities1">
+        <EntityContainerMapping StorageEntityContainer="Хранилище Rodionov7PRACTIKAModelContainer" CdmEntityContainer="Rodionov7PRACTIKAEntities4">
           <EntitySetMapping Name="GameSessions">
             <EntityTypeMapping TypeName="Rodionov7PRACTIKAModel.GameSessions">
               <MappingFragment StoreEntitySet="GameSessions">

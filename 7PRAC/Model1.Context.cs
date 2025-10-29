@@ -13,10 +13,10 @@ namespace _7PRAC
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class Rodionov7PRACTIKAEntities1 : DbContext
+    public partial class Rodionov7PRACTIKAEntities4 : DbContext
     {
-        public Rodionov7PRACTIKAEntities1()
-            : base("name=Rodionov7PRACTIKAEntities1")
+        public Rodionov7PRACTIKAEntities4()
+            : base("name=Rodionov7PRACTIKAEntities4")
         {
         }
     
