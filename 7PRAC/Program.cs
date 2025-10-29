@@ -14,7 +14,7 @@ class CarRepairSimulator
 
     public CarRepairSimulator(int initialBalance)
     {
-        dbConnection = $"Server=bd-kip.fa.ru;Database=RODIONOVPR7;User Id=sa;Password=1qaz!QAZ;";
+        dbConnection = $"Server=bd-kip.fa.ru;Database=Rodionov7PRACTIKA;User Id=sa;Password=1qaz!QAZ;";
         balance = initialBalance;
         stock = new Dictionary<string, int>();
         suppliesInTransit = new List<SupplyOrder>();

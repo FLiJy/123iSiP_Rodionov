@@ -4,374 +4,330 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Хранилище PR7Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Cars">
+      <Schema Namespace="Хранилище Rodionov7PRACTIKAModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="GameSessions">
           <Key>
-            <PropertyRef Name="CarID" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="CarID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ClientID" Type="int" Nullable="false" />
-          <Property Name="Make" Type="nvarchar" MaxLength="100" />
-          <Property Name="Model" Type="nvarchar" MaxLength="100" />
-          <Property Name="Plate" Type="nvarchar" MaxLength="50" />
-        </EntityType>
-        <EntityType Name="Clients">
-          <Key>
-            <PropertyRef Name="ClientID" />
-          </Key>
-          <Property Name="ClientID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="200" />
-          <Property Name="Contact" Type="nvarchar" MaxLength="200" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StartMoney" Type="int" Nullable="false" />
+          <Property Name="CurrentMoney" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Inventory">
           <Key>
-            <PropertyRef Name="InventoryID" />
+            <PropertyRef Name="GameId" />
+            <PropertyRef Name="PartName" />
           </Key>
-          <Property Name="InventoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="GameId" Type="int" Nullable="false" />
+          <Property Name="PartName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Quantity" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Parts">
           <Key>
-            <PropertyRef Name="PartID" />
+            <PropertyRef Name="Name" />
           </Key>
-          <Property Name="PartID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PartCode" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="PartName" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="PurchasePrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="SalePrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Price" Type="int" Nullable="false" />
+          <Property Name="InitialQuantity" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PurchaseOrders">
           <Key>
-            <PropertyRef Name="POID" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="POID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameId" Type="int" Nullable="false" />
+          <Property Name="PartName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Quantity" Type="int" Nullable="false" />
-          <Property Name="TotalCost" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
-          <Property Name="MachinesUntilArrival" Type="int" Nullable="false" />
-          <Property Name="IsApplied" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Repairs">
-          <Key>
-            <PropertyRef Name="RepairID" />
-          </Key>
-          <Property Name="RepairID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ClientID" Type="int" />
-          <Property Name="CarID" Type="int" />
-          <Property Name="PartID" Type="int" Nullable="false" />
-          <Property Name="RepairPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="WorkFee" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="RepairDate" Type="datetime" Nullable="false" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DeliveryCounter" Type="int" Nullable="false" />
+          <Property Name="OrderDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Transactions">
           <Key>
-            <PropertyRef Name="TransactionID" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="TransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameId" Type="int" Nullable="false" />
+          <Property Name="ClientNumber" Type="int" Nullable="false" />
+          <Property Name="PartName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Amount" Type="int" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="TransactionDate" Type="datetime" Nullable="false" />
-          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Type" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" />
         </EntityType>
-        <Association Name="FK__Cars__ClientID__4222D4EF">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
-          <End Role="Cars" Type="Self.Cars" Multiplicity="*" />
+        <Association Name="FK__Inventory__GameI__5441852A">
+          <End Role="GameSessions" Type="Self.GameSessions" Multiplicity="1" />
+          <End Role="Inventory" Type="Self.Inventory" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="ClientID" />
+            <Principal Role="GameSessions">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Cars">
-              <PropertyRef Name="ClientID" />
+            <Dependent Role="Inventory">
+              <PropertyRef Name="GameId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Inventory__PartI__3C69FB99">
+        <Association Name="FK__Inventory__PartN__5535A963">
           <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
           <End Role="Inventory" Type="Self.Inventory" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Parts">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="Name" />
             </Principal>
             <Dependent Role="Inventory">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="PartName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PurchaseO__PartI__4CA06362">
+        <Association Name="FK__PurchaseO__GameI__5070F446">
+          <End Role="GameSessions" Type="Self.GameSessions" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameSessions">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="GameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__PartN__5165187F">
           <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
           <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Parts">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="Name" />
             </Principal>
             <Dependent Role="PurchaseOrders">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="PartName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Repairs__CarID__45F365D3">
-          <End Role="Cars" Type="Self.Cars" Multiplicity="0..1" />
-          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+        <Association Name="FK__Transacti__GameI__5812160E">
+          <End Role="GameSessions" Type="Self.GameSessions" Multiplicity="1" />
+          <End Role="Transactions" Type="Self.Transactions" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Cars">
-              <PropertyRef Name="CarID" />
+            <Principal Role="GameSessions">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Repairs">
-              <PropertyRef Name="CarID" />
+            <Dependent Role="Transactions">
+              <PropertyRef Name="GameId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Repairs__ClientI__44FF419A">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="0..1" />
-          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="ClientID" />
-            </Principal>
-            <Dependent Role="Repairs">
-              <PropertyRef Name="ClientID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Repairs__PartID__46E78A0C">
+        <Association Name="FK__Transacti__PartN__59063A47">
           <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
-          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <End Role="Transactions" Type="Self.Transactions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Parts">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="Name" />
             </Principal>
-            <Dependent Role="Repairs">
-              <PropertyRef Name="PartID" />
+            <Dependent Role="Transactions">
+              <PropertyRef Name="PartName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="Хранилище PR7ModelContainer">
-          <EntitySet Name="Cars" EntityType="Self.Cars" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Clients" EntityType="Self.Clients" Schema="dbo" store:Type="Tables" />
+        <EntityContainer Name="Хранилище Rodionov7PRACTIKAModelContainer">
+          <EntitySet Name="GameSessions" EntityType="Self.GameSessions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Inventory" EntityType="Self.Inventory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Parts" EntityType="Self.Parts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrders" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Repairs" EntityType="Self.Repairs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transactions" EntityType="Self.Transactions" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Cars__ClientID__4222D4EF" Association="Self.FK__Cars__ClientID__4222D4EF">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="Cars" EntitySet="Cars" />
+          <AssociationSet Name="FK__Inventory__GameI__5441852A" Association="Self.FK__Inventory__GameI__5441852A">
+            <End Role="GameSessions" EntitySet="GameSessions" />
+            <End Role="Inventory" EntitySet="Inventory" />
           </AssociationSet>
-          <AssociationSet Name="FK__Inventory__PartI__3C69FB99" Association="Self.FK__Inventory__PartI__3C69FB99">
+          <AssociationSet Name="FK__Inventory__PartN__5535A963" Association="Self.FK__Inventory__PartN__5535A963">
             <End Role="Parts" EntitySet="Parts" />
             <End Role="Inventory" EntitySet="Inventory" />
           </AssociationSet>
-          <AssociationSet Name="FK__PurchaseO__PartI__4CA06362" Association="Self.FK__PurchaseO__PartI__4CA06362">
+          <AssociationSet Name="FK__PurchaseO__GameI__5070F446" Association="Self.FK__PurchaseO__GameI__5070F446">
+            <End Role="GameSessions" EntitySet="GameSessions" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__PartN__5165187F" Association="Self.FK__PurchaseO__PartN__5165187F">
             <End Role="Parts" EntitySet="Parts" />
             <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
           </AssociationSet>
-          <AssociationSet Name="FK__Repairs__CarID__45F365D3" Association="Self.FK__Repairs__CarID__45F365D3">
-            <End Role="Cars" EntitySet="Cars" />
-            <End Role="Repairs" EntitySet="Repairs" />
+          <AssociationSet Name="FK__Transacti__GameI__5812160E" Association="Self.FK__Transacti__GameI__5812160E">
+            <End Role="GameSessions" EntitySet="GameSessions" />
+            <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
-          <AssociationSet Name="FK__Repairs__ClientI__44FF419A" Association="Self.FK__Repairs__ClientI__44FF419A">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="Repairs" EntitySet="Repairs" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Repairs__PartID__46E78A0C" Association="Self.FK__Repairs__PartID__46E78A0C">
+          <AssociationSet Name="FK__Transacti__PartN__59063A47" Association="Self.FK__Transacti__PartN__59063A47">
             <End Role="Parts" EntitySet="Parts" />
-            <End Role="Repairs" EntitySet="Repairs" />
+            <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
         </EntityContainer>
       </Schema>
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="PR7Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Cars">
+      <Schema Namespace="Rodionov7PRACTIKAModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="GameSessions">
           <Key>
-            <PropertyRef Name="CarID" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="CarID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ClientID" Type="Int32" Nullable="false" />
-          <Property Name="Make" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Plate" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Clients" Relationship="Self.FK__Cars__ClientID__4222D4EF" FromRole="Cars" ToRole="Clients" />
-          <NavigationProperty Name="Repairs" Relationship="Self.FK__Repairs__CarID__45F365D3" FromRole="Cars" ToRole="Repairs" />
-        </EntityType>
-        <EntityType Name="Clients">
-          <Key>
-            <PropertyRef Name="ClientID" />
-          </Key>
-          <Property Name="ClientID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="Contact" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Cars" Relationship="Self.FK__Cars__ClientID__4222D4EF" FromRole="Clients" ToRole="Cars" />
-          <NavigationProperty Name="Repairs" Relationship="Self.FK__Repairs__ClientI__44FF419A" FromRole="Clients" ToRole="Repairs" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StartMoney" Type="Int32" Nullable="false" />
+          <Property Name="CurrentMoney" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastUpdate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Inventory" Relationship="Self.FK__Inventory__GameI__5441852A" FromRole="GameSessions" ToRole="Inventory" />
+          <NavigationProperty Name="PurchaseOrders" Relationship="Self.FK__PurchaseO__GameI__5070F446" FromRole="GameSessions" ToRole="PurchaseOrders" />
+          <NavigationProperty Name="Transactions" Relationship="Self.FK__Transacti__GameI__5812160E" FromRole="GameSessions" ToRole="Transactions" />
         </EntityType>
         <EntityType Name="Inventory">
           <Key>
-            <PropertyRef Name="InventoryID" />
+            <PropertyRef Name="GameId" />
+            <PropertyRef Name="PartName" />
           </Key>
-          <Property Name="InventoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="GameId" Type="Int32" Nullable="false" />
+          <Property Name="PartName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Parts" Relationship="Self.FK__Inventory__PartI__3C69FB99" FromRole="Inventory" ToRole="Parts" />
+          <NavigationProperty Name="GameSessions" Relationship="Self.FK__Inventory__GameI__5441852A" FromRole="Inventory" ToRole="GameSessions" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__Inventory__PartN__5535A963" FromRole="Inventory" ToRole="Parts" />
         </EntityType>
         <EntityType Name="Parts">
           <Key>
-            <PropertyRef Name="PartID" />
+            <PropertyRef Name="Name" />
           </Key>
-          <Property Name="PartID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PartCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PartName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PurchasePrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="SalePrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <NavigationProperty Name="Inventory" Relationship="Self.FK__Inventory__PartI__3C69FB99" FromRole="Parts" ToRole="Inventory" />
-          <NavigationProperty Name="PurchaseOrders" Relationship="Self.FK__PurchaseO__PartI__4CA06362" FromRole="Parts" ToRole="PurchaseOrders" />
-          <NavigationProperty Name="Repairs" Relationship="Self.FK__Repairs__PartID__46E78A0C" FromRole="Parts" ToRole="Repairs" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Int32" Nullable="false" />
+          <Property Name="InitialQuantity" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Inventory" Relationship="Self.FK__Inventory__PartN__5535A963" FromRole="Parts" ToRole="Inventory" />
+          <NavigationProperty Name="PurchaseOrders" Relationship="Self.FK__PurchaseO__PartN__5165187F" FromRole="Parts" ToRole="PurchaseOrders" />
+          <NavigationProperty Name="Transactions" Relationship="Self.FK__Transacti__PartN__59063A47" FromRole="Parts" ToRole="Transactions" />
         </EntityType>
         <EntityType Name="PurchaseOrders">
           <Key>
-            <PropertyRef Name="POID" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="POID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameId" Type="Int32" Nullable="false" />
+          <Property Name="PartName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
-          <Property Name="TotalCost" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MachinesUntilArrival" Type="Int32" Nullable="false" />
-          <Property Name="IsApplied" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Parts" Relationship="Self.FK__PurchaseO__PartI__4CA06362" FromRole="PurchaseOrders" ToRole="Parts" />
-        </EntityType>
-        <EntityType Name="Repairs">
-          <Key>
-            <PropertyRef Name="RepairID" />
-          </Key>
-          <Property Name="RepairID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ClientID" Type="Int32" />
-          <Property Name="CarID" Type="Int32" />
-          <Property Name="PartID" Type="Int32" Nullable="false" />
-          <Property Name="RepairPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="WorkFee" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="RepairDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Cars" Relationship="Self.FK__Repairs__CarID__45F365D3" FromRole="Repairs" ToRole="Cars" />
-          <NavigationProperty Name="Clients" Relationship="Self.FK__Repairs__ClientI__44FF419A" FromRole="Repairs" ToRole="Clients" />
-          <NavigationProperty Name="Parts" Relationship="Self.FK__Repairs__PartID__46E78A0C" FromRole="Repairs" ToRole="Parts" />
+          <Property Name="DeliveryCounter" Type="Int32" Nullable="false" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="GameSessions" Relationship="Self.FK__PurchaseO__GameI__5070F446" FromRole="PurchaseOrders" ToRole="GameSessions" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__PurchaseO__PartN__5165187F" FromRole="PurchaseOrders" ToRole="Parts" />
         </EntityType>
         <EntityType Name="Transactions">
           <Key>
-            <PropertyRef Name="TransactionID" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="TransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameId" Type="Int32" Nullable="false" />
+          <Property Name="ClientNumber" Type="Int32" Nullable="false" />
+          <Property Name="PartName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Amount" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="GameSessions" Relationship="Self.FK__Transacti__GameI__5812160E" FromRole="Transactions" ToRole="GameSessions" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__Transacti__PartN__59063A47" FromRole="Transactions" ToRole="Parts" />
         </EntityType>
-        <Association Name="FK__Cars__ClientID__4222D4EF">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
-          <End Role="Cars" Type="Self.Cars" Multiplicity="*" />
+        <Association Name="FK__Inventory__GameI__5441852A">
+          <End Role="GameSessions" Type="Self.GameSessions" Multiplicity="1" />
+          <End Role="Inventory" Type="Self.Inventory" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="ClientID" />
+            <Principal Role="GameSessions">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Cars">
-              <PropertyRef Name="ClientID" />
+            <Dependent Role="Inventory">
+              <PropertyRef Name="GameId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Repairs__CarID__45F365D3">
-          <End Role="Cars" Type="Self.Cars" Multiplicity="0..1" />
-          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+        <Association Name="FK__PurchaseO__GameI__5070F446">
+          <End Role="GameSessions" Type="Self.GameSessions" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Cars">
-              <PropertyRef Name="CarID" />
+            <Principal Role="GameSessions">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Repairs">
-              <PropertyRef Name="CarID" />
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="GameId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Repairs__ClientI__44FF419A">
-          <End Role="Clients" Type="Self.Clients" Multiplicity="0..1" />
-          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+        <Association Name="FK__Transacti__GameI__5812160E">
+          <End Role="GameSessions" Type="Self.GameSessions" Multiplicity="1" />
+          <End Role="Transactions" Type="Self.Transactions" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Clients">
-              <PropertyRef Name="ClientID" />
+            <Principal Role="GameSessions">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Repairs">
-              <PropertyRef Name="ClientID" />
+            <Dependent Role="Transactions">
+              <PropertyRef Name="GameId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Inventory__PartI__3C69FB99">
+        <Association Name="FK__Inventory__PartN__5535A963">
           <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
           <End Role="Inventory" Type="Self.Inventory" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Parts">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="Name" />
             </Principal>
             <Dependent Role="Inventory">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="PartName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PurchaseO__PartI__4CA06362">
+        <Association Name="FK__PurchaseO__PartN__5165187F">
           <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
           <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Parts">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="Name" />
             </Principal>
             <Dependent Role="PurchaseOrders">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="PartName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Repairs__PartID__46E78A0C">
+        <Association Name="FK__Transacti__PartN__59063A47">
           <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
-          <End Role="Repairs" Type="Self.Repairs" Multiplicity="*" />
+          <End Role="Transactions" Type="Self.Transactions" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Parts">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="Name" />
             </Principal>
-            <Dependent Role="Repairs">
-              <PropertyRef Name="PartID" />
+            <Dependent Role="Transactions">
+              <PropertyRef Name="PartName" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="PR7Entities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Cars" EntityType="Self.Cars" />
-          <EntitySet Name="Clients" EntityType="Self.Clients" />
+        <EntityContainer Name="Rodionov7PRACTIKAEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="GameSessions" EntityType="Self.GameSessions" />
           <EntitySet Name="Inventory" EntityType="Self.Inventory" />
           <EntitySet Name="Parts" EntityType="Self.Parts" />
           <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrders" />
-          <EntitySet Name="Repairs" EntityType="Self.Repairs" />
           <EntitySet Name="Transactions" EntityType="Self.Transactions" />
-          <AssociationSet Name="FK__Cars__ClientID__4222D4EF" Association="Self.FK__Cars__ClientID__4222D4EF">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="Cars" EntitySet="Cars" />
+          <AssociationSet Name="FK__Inventory__GameI__5441852A" Association="Self.FK__Inventory__GameI__5441852A">
+            <End Role="GameSessions" EntitySet="GameSessions" />
+            <End Role="Inventory" EntitySet="Inventory" />
           </AssociationSet>
-          <AssociationSet Name="FK__Repairs__CarID__45F365D3" Association="Self.FK__Repairs__CarID__45F365D3">
-            <End Role="Cars" EntitySet="Cars" />
-            <End Role="Repairs" EntitySet="Repairs" />
+          <AssociationSet Name="FK__PurchaseO__GameI__5070F446" Association="Self.FK__PurchaseO__GameI__5070F446">
+            <End Role="GameSessions" EntitySet="GameSessions" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
           </AssociationSet>
-          <AssociationSet Name="FK__Repairs__ClientI__44FF419A" Association="Self.FK__Repairs__ClientI__44FF419A">
-            <End Role="Clients" EntitySet="Clients" />
-            <End Role="Repairs" EntitySet="Repairs" />
+          <AssociationSet Name="FK__Transacti__GameI__5812160E" Association="Self.FK__Transacti__GameI__5812160E">
+            <End Role="GameSessions" EntitySet="GameSessions" />
+            <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
-          <AssociationSet Name="FK__Inventory__PartI__3C69FB99" Association="Self.FK__Inventory__PartI__3C69FB99">
+          <AssociationSet Name="FK__Inventory__PartN__5535A963" Association="Self.FK__Inventory__PartN__5535A963">
             <End Role="Parts" EntitySet="Parts" />
             <End Role="Inventory" EntitySet="Inventory" />
           </AssociationSet>
-          <AssociationSet Name="FK__PurchaseO__PartI__4CA06362" Association="Self.FK__PurchaseO__PartI__4CA06362">
+          <AssociationSet Name="FK__PurchaseO__PartN__5165187F" Association="Self.FK__PurchaseO__PartN__5165187F">
             <End Role="Parts" EntitySet="Parts" />
             <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
           </AssociationSet>
-          <AssociationSet Name="FK__Repairs__PartID__46E78A0C" Association="Self.FK__Repairs__PartID__46E78A0C">
+          <AssociationSet Name="FK__Transacti__PartN__59063A47" Association="Self.FK__Transacti__PartN__59063A47">
             <End Role="Parts" EntitySet="Parts" />
-            <End Role="Repairs" EntitySet="Repairs" />
+            <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
         </EntityContainer>
       </Schema>
@@ -379,82 +335,59 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="Хранилище PR7ModelContainer" CdmEntityContainer="PR7Entities">
-          <EntitySetMapping Name="Cars">
-            <EntityTypeMapping TypeName="PR7Model.Cars">
-              <MappingFragment StoreEntitySet="Cars">
-                <ScalarProperty Name="CarID" ColumnName="CarID" />
-                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
-                <ScalarProperty Name="Make" ColumnName="Make" />
-                <ScalarProperty Name="Model" ColumnName="Model" />
-                <ScalarProperty Name="Plate" ColumnName="Plate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Clients">
-            <EntityTypeMapping TypeName="PR7Model.Clients">
-              <MappingFragment StoreEntitySet="Clients">
-                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Contact" ColumnName="Contact" />
+        <EntityContainerMapping StorageEntityContainer="Хранилище Rodionov7PRACTIKAModelContainer" CdmEntityContainer="Rodionov7PRACTIKAEntities1">
+          <EntitySetMapping Name="GameSessions">
+            <EntityTypeMapping TypeName="Rodionov7PRACTIKAModel.GameSessions">
+              <MappingFragment StoreEntitySet="GameSessions">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="StartMoney" ColumnName="StartMoney" />
+                <ScalarProperty Name="CurrentMoney" ColumnName="CurrentMoney" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="LastUpdate" ColumnName="LastUpdate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Inventory">
-            <EntityTypeMapping TypeName="PR7Model.Inventory">
+            <EntityTypeMapping TypeName="Rodionov7PRACTIKAModel.Inventory">
               <MappingFragment StoreEntitySet="Inventory">
-                <ScalarProperty Name="InventoryID" ColumnName="InventoryID" />
-                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="GameId" ColumnName="GameId" />
+                <ScalarProperty Name="PartName" ColumnName="PartName" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Parts">
-            <EntityTypeMapping TypeName="PR7Model.Parts">
+            <EntityTypeMapping TypeName="Rodionov7PRACTIKAModel.Parts">
               <MappingFragment StoreEntitySet="Parts">
-                <ScalarProperty Name="PartID" ColumnName="PartID" />
-                <ScalarProperty Name="PartCode" ColumnName="PartCode" />
-                <ScalarProperty Name="PartName" ColumnName="PartName" />
-                <ScalarProperty Name="PurchasePrice" ColumnName="PurchasePrice" />
-                <ScalarProperty Name="SalePrice" ColumnName="SalePrice" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="InitialQuantity" ColumnName="InitialQuantity" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PurchaseOrders">
-            <EntityTypeMapping TypeName="PR7Model.PurchaseOrders">
+            <EntityTypeMapping TypeName="Rodionov7PRACTIKAModel.PurchaseOrders">
               <MappingFragment StoreEntitySet="PurchaseOrders">
-                <ScalarProperty Name="POID" ColumnName="POID" />
-                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="GameId" ColumnName="GameId" />
+                <ScalarProperty Name="PartName" ColumnName="PartName" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
-                <ScalarProperty Name="TotalCost" ColumnName="TotalCost" />
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="MachinesUntilArrival" ColumnName="MachinesUntilArrival" />
-                <ScalarProperty Name="IsApplied" ColumnName="IsApplied" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Repairs">
-            <EntityTypeMapping TypeName="PR7Model.Repairs">
-              <MappingFragment StoreEntitySet="Repairs">
-                <ScalarProperty Name="RepairID" ColumnName="RepairID" />
-                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
-                <ScalarProperty Name="CarID" ColumnName="CarID" />
-                <ScalarProperty Name="PartID" ColumnName="PartID" />
-                <ScalarProperty Name="RepairPrice" ColumnName="RepairPrice" />
-                <ScalarProperty Name="WorkFee" ColumnName="WorkFee" />
-                <ScalarProperty Name="RepairDate" ColumnName="RepairDate" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="DeliveryCounter" ColumnName="DeliveryCounter" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Transactions">
-            <EntityTypeMapping TypeName="PR7Model.Transactions">
+            <EntityTypeMapping TypeName="Rodionov7PRACTIKAModel.Transactions">
               <MappingFragment StoreEntitySet="Transactions">
-                <ScalarProperty Name="TransactionID" ColumnName="TransactionID" />
-                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="GameId" ColumnName="GameId" />
+                <ScalarProperty Name="ClientNumber" ColumnName="ClientNumber" />
+                <ScalarProperty Name="PartName" ColumnName="PartName" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
