@@ -495,36 +495,20 @@ class Program
 //HandleRepair()-обработать ремонт
 //PlaceSupplyOrder()-разместить заказ
 //DeclineCustomer()-отказать клиенту
-//UpdateStockInDb() - обновить склад
-//PersistSessionState() - сохранить состояние
-//RecordDeal() - записать сделку
-//HandleIncomingSupplies() - обработать поставки
+//UpdateStockInDb()-обновить склад
+//PersistSessionState()-сохранить состояние
+//RecordDeal()-записать сделку
+//HandleIncomingSupplies()-обработать поставки
 
 //3. Какие данные ВСЕГДА вместе?
 //Группировка в классы:
 //sessionId + balance + stock → класс GameState
 //PartName + Quantity + DeliveryCounter → класс SupplyOrder (уже есть)
 //ClientNumber + PartName + Amount + Status → класс TransactionData
-//4. Что может существовать ОТДЕЛЬНО?
-//Отдельные классы:
-
-//DatabaseService - работа с БД(отделить от логики симулятора)
-
-//CustomerManager - управление клиентами
-
-//SupplyChainManager - управление поставками
-
-//FinancialManager - управление финансами
-
-//UIManager - взаимодействие с пользователем
 
 //5. Что ПОВТОРЯЕТСЯ в разных местах?
 //Вынести в отдельные методы:
 
-//Работа с БД - повторяющиеся using (var context = ...) блоки
-
-//Обработка ошибок - одинаковые try-catch блоки
-
-//Валидация ввода - проверки пользовательского ввода
-
+//Работа с БД-повтор using (var context = ...)
+//одинаковые try-catch
 //Обновление UI -вывод статуса и меню
