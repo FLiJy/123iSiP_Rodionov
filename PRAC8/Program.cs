@@ -98,7 +98,6 @@
 // 3. Не держать состояние в статическом контексте слишком долго для реальных приложений — здесь допустимо.
 // 4. Для истории и отчетов удобнее иметь таблицы Order и OrderItems — тогда в ShowOrderHistory делать join на OrderItems.
 // 5. Логирование (Console.WriteLine) ошибок и операций поможет при отладке.
-using _8PRAC;
 using PRAC8;
 using System;
 using System.Collections.Generic;

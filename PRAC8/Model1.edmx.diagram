@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1870d4ee02864f0f984205c01d21f052" Name="Diagram1">
+        <EntityTypeShape EntityType="Rodionov8PRACModel.Cart" Width="1.5" PointX="3" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Rodionov8PRACModel.Orders" Width="1.5" PointX="6" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Rodionov8PRACModel.Products" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Rodionov8PRACModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="6.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Rodionov8PRACModel.Users" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
+        <AssociationConnector Association="Rodionov8PRACModel.FK__Cart__ProductId__4F7CD00D" ManuallyRouted="false" />
+        <AssociationConnector Association="Rodionov8PRACModel.FK__Cart__UserId__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="Rodionov8PRACModel.FK__Orders__ProductI__534D60F1" ManuallyRouted="false" />
+        <AssociationConnector Association="Rodionov8PRACModel.FK__Orders__UserId__52593CB8" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
