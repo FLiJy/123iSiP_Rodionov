@@ -1,9 +1,9 @@
 ﻿using _7PRAC;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-// Основной класс симулятора автосервиса
 class CarRepairSimulator
 {
     private int balance;
@@ -479,3 +479,52 @@ class Program
         }
     }
 }
+
+//1.Какие существенные сущности в задаче?
+//Сущности:
+//CarRepairSimulator-основной симулятор
+//GameSession-игровая сессия
+//Parts-запчасти
+//PurchaseOrders-заказы на поставку
+//Inventory-складские запасы
+//Transactions-транзакции
+//SupplyOrder-поставка (вспомогательный класс)
+
+//2. Какие глаголы в задаче?
+//Методы/Операции:
+//HandleRepair()-обработать ремонт
+//PlaceSupplyOrder()-разместить заказ
+//DeclineCustomer()-отказать клиенту
+//UpdateStockInDb() - обновить склад
+//PersistSessionState() - сохранить состояние
+//RecordDeal() - записать сделку
+//HandleIncomingSupplies() - обработать поставки
+
+//3. Какие данные ВСЕГДА вместе?
+//Группировка в классы:
+//sessionId + balance + stock → класс GameState
+//PartName + Quantity + DeliveryCounter → класс SupplyOrder (уже есть)
+//ClientNumber + PartName + Amount + Status → класс TransactionData
+//4. Что может существовать ОТДЕЛЬНО?
+//Отдельные классы:
+
+//DatabaseService - работа с БД(отделить от логики симулятора)
+
+//CustomerManager - управление клиентами
+
+//SupplyChainManager - управление поставками
+
+//FinancialManager - управление финансами
+
+//UIManager - взаимодействие с пользователем
+
+//5. Что ПОВТОРЯЕТСЯ в разных местах?
+//Вынести в отдельные методы:
+
+//Работа с БД - повторяющиеся using (var context = ...) блоки
+
+//Обработка ошибок - одинаковые try-catch блоки
+
+//Валидация ввода - проверки пользовательского ввода
+
+//Обновление UI -вывод статуса и меню
