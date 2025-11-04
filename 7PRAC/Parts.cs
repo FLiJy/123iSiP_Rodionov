@@ -12,26 +12,19 @@ namespace _7PRAC
     using System;
     using System.Collections.Generic;
     
-    public partial class Parts
+    public partial class parts
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Parts()
+        public parts()
         {
-            this.Inventory = new HashSet<Inventory>();
-            this.PurchaseOrders = new HashSet<PurchaseOrders>();
-            this.Transactions = new HashSet<Transactions>();
+            this.WareHouseParts = new HashSet<WareHouseParts>();
         }
     
+        public int ID { get; set; }
         public string Name { get; set; }
-        public int Price { get; set; }
-        public int InitialQuantity { get; set; }
-        public bool IsActive { get; set; }
+        public decimal Price { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Inventory> Inventory { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PurchaseOrders> PurchaseOrders { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Transactions> Transactions { get; set; }
+        public virtual ICollection<WareHouseParts> WareHouseParts { get; set; }
     }
 }

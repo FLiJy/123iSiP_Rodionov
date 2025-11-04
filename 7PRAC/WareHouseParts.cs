@@ -12,16 +12,13 @@ namespace _7PRAC
     using System;
     using System.Collections.Generic;
     
-    public partial class PurchaseOrders
+    public partial class WareHouseParts
     {
-        public int Id { get; set; }
-        public int GameId { get; set; }
-        public string PartName { get; set; }
-        public int Quantity { get; set; }
-        public int DeliveryCounter { get; set; }
-        public System.DateTime OrderDate { get; set; }
+        public int SkladID { get; set; }
+        public int PartID { get; set; }
+        public int Count { get; set; }
     
-        public virtual GameSessions GameSessions { get; set; }
-        public virtual Parts Parts { get; set; }
+        public virtual parts parts { get; set; }
+        public virtual WareHouse WareHouse { get; set; }
     }
 }

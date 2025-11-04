@@ -1,52 +1,74 @@
-﻿using _7PRAC;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _7PRAC; // оставьте ваш неймспейс с EDMX/EF-контекстом
 
 class CarRepairSimulator
 {
-    private int balance;
-    private Dictionary<string, int> stock;
+    private decimal balance;
+    private Dictionary<string, int> stock; // локальный вид склада (Name -> Qty)
     private List<SupplyOrder> suppliesInTransit;
     private Random rng;
-    private int sessionId;
+    private const int WarehouseId = 1;
 
-    public CarRepairSimulator(int initialBalance)
+    public CarRepairSimulator(decimal initialBalance)
     {
         balance = initialBalance;
-        stock = new Dictionary<string, int>();
+        stock = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         suppliesInTransit = new List<SupplyOrder>();
         rng = new Random();
-        StartNewSession();
+        StartNewSessionRandomInventory();
+        RefreshLocalSuppliesFromDb(); // загрузим текущие поставки (в нашем случае нет таблицы заказов, но оставлю вызов для совместимости)
     }
 
-    private void StartNewSession()
+    // Заполняет случайный инвентарь, записывает в WareHouseParts и баланс в WareHouse
+    private void StartNewSessionRandomInventory()
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        using (var context = new Rodionov8PRACEntities())
         {
-            // Создаем новую игровую сессию
-            var newSession = new GameSessions
+            // Обновим/создадим запись склада с балансом
+            var wh = context.WareHouse.FirstOrDefault(w => w.ID == WarehouseId);
+            if (wh == null)
             {
-                StartMoney = balance,
-                CurrentMoney = balance,
-                CreatedDate = DateTime.Now,
-                LastUpdate = DateTime.Now
-            };
-
-            context.GameSessions.Add(newSession);
-            context.SaveChanges();
-            sessionId = newSession.Id;
-
-            // Загружаем начальные детали из таблицы Parts
-            var initialParts = context.Parts
-                .Where(p => p.IsActive && p.InitialQuantity > 0)
-                .ToList();
-
-            foreach (var part in initialParts)
+                wh = new WareHouse { ID = WarehouseId, balance = balance };
+                context.WareHouse.Add(wh);
+            }
+            else
             {
-                stock[part.Name] = part.InitialQuantity;
-                UpdateStockInDb(part.Name, part.InitialQuantity);
+                wh.balance = balance;
+            }
+
+            // Для каждой детали в таблице Parts генерируем случайное кол-во (0..10) и записываем в WareHouseParts
+            var parts = context.parts.ToList();
+            foreach (var p in parts)
+            {
+                int qty = rng.Next(0, 11); // случайное количество 0..10
+                stock[p.Name] = qty;
+
+                var whPart = context.WareHouseParts.FirstOrDefault(wp => wp.SkladID == WarehouseId && wp.PartID == p.ID);
+                if (whPart != null)
+                {
+                    whPart.Count = qty;
+                }
+                else
+                {
+                    context.WareHouseParts.Add(new WareHouseParts
+                    {
+                        SkladID = WarehouseId,
+                        PartID = p.ID,
+                        Count = qty
+                    });
+                }
+            }
+
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка при инициализации склада: " + ex.Message);
+                if (ex.InnerException != null) Console.WriteLine(ex.InnerException.Message);
             }
         }
     }
@@ -63,7 +85,7 @@ class CarRepairSimulator
         {
             Console.Clear();
             Console.WriteLine($"=== КЛИЕНТ №{customerCount} ===");
-            HandleIncomingSupplies();
+            HandleIncomingSupplies(); // обрабатываем доставленные поставки из памяти
             DisplayCurrentStatus();
 
             string faultyPart = PickRandomFault();
@@ -91,7 +113,7 @@ class CarRepairSimulator
                     OpenSupplyMenu();
                     break;
                 case "4":
-                    PersistSessionState();
+                    PersistWarehouseState();
                     Console.WriteLine($"Игра завершена! Итоговый баланс: {balance} руб.");
                     return;
                 default:
@@ -106,49 +128,53 @@ class CarRepairSimulator
         }
     }
 
+    // Поставки в пути хранятся в suppliesInTransit (в памяти). Этот метод доставляет те, у которых DeliveryCounter<=0
     private void HandleIncomingSupplies()
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        var delivered = suppliesInTransit.Where(s => s.DeliveryCounter <= 0).ToList();
+        if (delivered.Count > 0)
         {
-            // Получаем заказы, готовые к доставке
-            var readyOrders = context.PurchaseOrders
-                .Where(po => po.GameId == sessionId && po.DeliveryCounter <= 0)
-                .ToList();
-
-            foreach (var order in readyOrders)
+            using (var context = new Rodionov8PRACEntities())
             {
-                if (stock.ContainsKey(order.PartName))
-                    stock[order.PartName] += order.Quantity;
-                else
-                    stock[order.PartName] = order.Quantity;
+                foreach (var order in delivered)
+                {
+                    // находим ID детали по имени
+                    var part = context.parts.FirstOrDefault(p => p.Name == order.PartName);
+                    if (part == null) continue;
 
-                Console.WriteLine($"✓ Доставлены {order.Quantity} {order.PartName}");
-                UpdateStockInDb(order.PartName, stock[order.PartName]);
+                    // обновляем WareHouseParts
+                    var whPart = context.WareHouseParts.FirstOrDefault(wp => wp.SkladID == WarehouseId && wp.PartID == part.ID);
+                    if (whPart != null)
+                        whPart.Count += order.Quantity;
+                    else
+                        context.WareHouseParts.Add(new WareHouseParts { SkladID = WarehouseId, PartID = part.ID, Count = order.Quantity });
 
-                context.PurchaseOrders.Remove(order);
+                    // обновляем локально
+                    if (stock.ContainsKey(order.PartName))
+                        stock[order.PartName] += order.Quantity;
+                    else
+                        stock[order.PartName] = order.Quantity;
+
+                    Console.WriteLine($"✓ Доставлены {order.Quantity} {order.PartName}");
+                }
+
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка при применении доставок: " + ex.Message);
+                }
             }
 
-            // Уменьшаем счетчик доставки для остальных заказов
-            var pendingOrders = context.PurchaseOrders
-                .Where(po => po.GameId == sessionId && po.DeliveryCounter > 0)
-                .ToList();
-
-            foreach (var order in pendingOrders)
-                order.DeliveryCounter--;
-
-            try
-            {
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при обновлении заказов: {ex.Message}");
-                if (ex.InnerException != null)
-                    Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
-            }
+            // удаляем доставленные из списка
+            suppliesInTransit.RemoveAll(s => s.DeliveryCounter <= 0);
         }
 
-        RefreshLocalSupplies();
+        // уменьшаем счетчик для остальных заказов
+        foreach (var s in suppliesInTransit)
+            s.DeliveryCounter--;
     }
 
     private void DisplayCurrentStatus()
@@ -170,40 +196,32 @@ class CarRepairSimulator
 
     private string PickRandomFault()
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        using (var context = new Rodionov8PRACEntities())
         {
-            var parts = context.Parts
-                .Where(p => p.IsActive)
-                .Select(p => p.Name)
-                .ToList();
-
+            var parts = context.parts.Select(p => p.Name).ToList();
             if (parts.Count > 0)
-            {
-                int index = rng.Next(parts.Count);
-                return parts[index];
-            }
+                return parts[rng.Next(parts.Count)];
         }
-        return "тормозные колодки"; // fallback
+        return "Тормозные колодки";
     }
 
     private int FetchPartCost(string partName)
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        using (var context = new Rodionov8PRACEntities())
         {
-            var part = context.Parts.FirstOrDefault(p => p.Name == partName);
-            return part?.Price ?? 500;
+            var part = context.parts.FirstOrDefault(p => p.Name == partName);
+            return part != null ? (int)part.Price : 500;
         }
     }
 
-    private void HandleRepair(string faultyPart, int fixPrice, int customerCount)
+    private void HandleRepair(string faultyPart, int fixPrice, int clientNumber)
     {
         if (stock.ContainsKey(faultyPart) && stock[faultyPart] > 0)
         {
             stock[faultyPart]--;
+            UpdateWareHousePartsQuantity(faultyPart, stock[faultyPart]);
             balance += fixPrice;
-            UpdateStockInDb(faultyPart, stock[faultyPart]);
-            PersistSessionState();
-            RecordDeal(customerCount, faultyPart, fixPrice, "success");
+            PersistWarehouseState();
             Console.WriteLine($"Успешный ремонт! +{fixPrice} руб.");
         }
         else
@@ -213,32 +231,27 @@ class CarRepairSimulator
             {
                 string substitute = stock.Keys.First();
                 stock[substitute]--;
-                if (stock[substitute] == 0)
-                    stock.Remove(substitute);
+                UpdateWareHousePartsQuantity(substitute, stock[substitute]);
                 int fine = fixPrice + 1000;
                 balance -= fine;
-                UpdateStockInDb(substitute, stock.ContainsKey(substitute) ? stock[substitute] : 0);
-                PersistSessionState();
-                RecordDeal(customerCount, faultyPart, -fine, "failed");
-                Console.WriteLine($"Штраф: {fine} руб.");
+                PersistWarehouseState();
+                Console.WriteLine($"Использовано заменяющее: {substitute}. Штраф: {fine} руб.");
             }
             else
             {
                 int fine = fixPrice + 1500;
                 balance -= fine;
-                PersistSessionState();
-                RecordDeal(customerCount, faultyPart, -fine, "no_parts");
-                Console.WriteLine($"Штраф: {fine} руб.");
+                PersistWarehouseState();
+                Console.WriteLine($"Нет деталей вовсе. Штраф: {fine} руб.");
             }
         }
     }
 
-    private void DeclineCustomer(int customerCount)
+    private void DeclineCustomer(int clientNumber)
     {
         int fine = 300;
         balance -= fine;
-        PersistSessionState();
-        RecordDeal(customerCount, "refusal", -fine, "refused");
+        PersistWarehouseState();
         Console.WriteLine($"Вы отказали клиенту. Штраф {fine} руб.");
     }
 
@@ -274,9 +287,10 @@ class CarRepairSimulator
                         if (total <= balance)
                         {
                             balance -= total;
-                            PlaceSupplyOrder(chosen.Name, amount);
-                            PersistSessionState();
-                            Console.WriteLine($"Заказ оформлен! Списано {total} руб.");
+                            // Выставляем заказ: delivery через 2 клиента (храним в памяти)
+                            suppliesInTransit.Add(new SupplyOrder(chosen.Name, amount, 2));
+                            PersistWarehouseState(); // сохраняем только баланс в WareHouse
+                            Console.WriteLine($"Заказ оформлен! Списано {total} руб. Поставка через 2 клиента.");
                         }
                         else Console.WriteLine("Недостаточно средств!");
                     }
@@ -287,61 +301,29 @@ class CarRepairSimulator
         }
     }
 
-    private List<Part> FetchAvailableParts()
+    private List<SimplePart> FetchAvailableParts()
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        using (var context = new Rodionov8PRACEntities())
         {
-            return context.Parts
-                .Where(p => p.IsActive)
-                .Select(p => new Part { Name = p.Name, Price = p.Price })
+            return context.parts
+                .Select(p => new SimplePart { Name = p.Name, Price = (int)p.Price })
                 .ToList();
         }
     }
 
-    private void PlaceSupplyOrder(string partName, int amount)
+    // Обновляет запись в WareHouseParts для данной детали (по имени)
+    private void UpdateWareHousePartsQuantity(string partName, int amount)
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        using (var context = new Rodionov8PRACEntities())
         {
-            var order = new PurchaseOrders
-            {
-                GameId = sessionId,
-                PartName = partName,
-                Quantity = amount,
-                DeliveryCounter = 2,
-                OrderDate = DateTime.Now
-            };
-            context.PurchaseOrders.Add(order);
+            var part = context.parts.FirstOrDefault(p => p.Name == partName);
+            if (part == null) return;
 
-            try
-            {
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при создании заказа: {ex.Message}");
-                if (ex.InnerException != null)
-                    Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
-            }
-        }
-        RefreshLocalSupplies();
-    }
-
-    private void UpdateStockInDb(string partName, int amount)
-    {
-        using (var context = new Rodionov7PRACTIKAEntities4())
-        {
-            var inventory = context.Inventory
-                .FirstOrDefault(i => i.GameId == sessionId && i.PartName == partName);
-
-            if (inventory != null)
-                inventory.Quantity = amount;
+            var whPart = context.WareHouseParts.FirstOrDefault(wp => wp.SkladID == WarehouseId && wp.PartID == part.ID);
+            if (whPart != null)
+                whPart.Count = amount;
             else
-                context.Inventory.Add(new Inventory
-                {
-                    GameId = sessionId,
-                    PartName = partName,
-                    Quantity = amount
-                });
+                context.WareHouseParts.Add(new WareHouseParts { SkladID = WarehouseId, PartID = part.ID, Count = amount });
 
             try
             {
@@ -349,51 +331,25 @@ class CarRepairSimulator
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка при обновлении склада: {ex.Message}");
-                if (ex.InnerException != null)
-                    Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
+                Console.WriteLine("Ошибка при обновлении WareHouseParts: " + ex.Message);
             }
         }
     }
 
-    private void PersistSessionState()
+    // Сохраняет баланс склада (WareHouse)
+    private void PersistWarehouseState()
     {
-        using (var context = new Rodionov7PRACTIKAEntities4())
+        using (var context = new Rodionov8PRACEntities())
         {
-            var session = context.GameSessions.FirstOrDefault(gs => gs.Id == sessionId);
-            if (session != null)
+            var wh = context.WareHouse.FirstOrDefault(w => w.ID == WarehouseId);
+            if (wh == null)
             {
-                session.CurrentMoney = balance;
-                session.LastUpdate = DateTime.Now;
-
-                try
-                {
-                    context.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Ошибка при сохранении сессии: {ex.Message}");
-                    if (ex.InnerException != null)
-                        Console.WriteLine($"Внутренняя ошибка: {ex.InnerException.Message}");
-                }
+                context.WareHouse.Add(new WareHouse { ID = WarehouseId, balance = balance });
             }
-        }
-    }
-
-    private void RecordDeal(int customerCount, string partName, int value, string outcome)
-    {
-        using (var context = new Rodionov7PRACTIKAEntities4())
-        {
-            var transaction = new Transactions
+            else
             {
-                GameId = sessionId,
-                ClientNumber = customerCount,
-                PartName = partName,
-                Amount = value,
-                Status = outcome,
-                TransactionDate = DateTime.Now
-            };
-            context.Transactions.Add(transaction);
+                wh.balance = balance;
+            }
 
             try
             {
@@ -401,30 +357,16 @@ class CarRepairSimulator
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"уйди отсю.да");
-                
+                Console.WriteLine("Ошибка при сохранении баланса: " + ex.Message);
             }
         }
     }
 
-    private void RefreshLocalSupplies()
+    // Обновляет локальный кэш suppliesInTransit из БД — нет таблицы заказов, поэтому метод оставлен пустым для совместимости
+    private void RefreshLocalSuppliesFromDb()
     {
-        suppliesInTransit.Clear();
-        using (var context = new Rodionov7PRACTIKAEntities4())
-        {
-            var supplies = context.PurchaseOrders
-                .Where(po => po.GameId == sessionId)
-                .ToList();
-
-            foreach (var supply in supplies)
-            {
-                suppliesInTransit.Add(new SupplyOrder(
-                    supply.PartName,
-                    supply.Quantity,
-                    supply.DeliveryCounter
-                ));
-            }
-        }
+        // Если у вас нет таблицы PurchaseOrders, то поставки в пути хранятся только в suppliesInTransit (память).
+        // Если нужна персистентная очередь заказов, можно добавить таблицу и тут загрузить записи.
     }
 
     private void DisplayPendingSupplies()
@@ -453,7 +395,7 @@ class SupplyOrder
     }
 }
 
-class Part
+class SimplePart
 {
     public string Name { get; set; }
     public int Price { get; set; }
@@ -467,7 +409,7 @@ class Program
         try
         {
             Console.WriteLine("Добро пожаловать в автосервис!");
-            var simulator = new CarRepairSimulator(5000);
+            var simulator = new CarRepairSimulator(10000m); // начальный баланс можно поменять
             simulator.StartSimulation();
         }
         catch (Exception ex)
@@ -479,6 +421,7 @@ class Program
         }
     }
 }
+
 
 //1.Какие существенные сущности в задаче?
 //Сущности:

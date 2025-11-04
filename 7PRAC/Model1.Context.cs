@@ -13,10 +13,10 @@ namespace _7PRAC
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class Rodionov7PRACTIKAEntities4 : DbContext
+    public partial class Rodionov8PRACEntities : DbContext
     {
-        public Rodionov7PRACTIKAEntities4()
-            : base("name=Rodionov7PRACTIKAEntities4")
+        public Rodionov8PRACEntities()
+            : base("name=Rodionov8PRACEntities")
         {
         }
     
@@ -25,10 +25,9 @@ namespace _7PRAC
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<GameSessions> GameSessions { get; set; }
-        public virtual DbSet<Inventory> Inventory { get; set; }
-        public virtual DbSet<Parts> Parts { get; set; }
-        public virtual DbSet<PurchaseOrders> PurchaseOrders { get; set; }
-        public virtual DbSet<Transactions> Transactions { get; set; }
+        public virtual DbSet<parts> parts { get; set; }
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
+        public virtual DbSet<WareHouse> WareHouse { get; set; }
+        public virtual DbSet<WareHouseParts> WareHouseParts { get; set; }
     }
 }

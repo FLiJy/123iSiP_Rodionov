@@ -12,13 +12,12 @@ namespace _7PRAC
     using System;
     using System.Collections.Generic;
     
-    public partial class Inventory
+    public partial class sysdiagrams
     {
-        public int GameId { get; set; }
-        public string PartName { get; set; }
-        public int Quantity { get; set; }
-    
-        public virtual GameSessions GameSessions { get; set; }
-        public virtual Parts Parts { get; set; }
+        public string name { get; set; }
+        public int principal_id { get; set; }
+        public int diagram_id { get; set; }
+        public Nullable<int> version { get; set; }
+        public byte[] definition { get; set; }
     }
 }

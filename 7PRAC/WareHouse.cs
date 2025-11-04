@@ -12,17 +12,18 @@ namespace _7PRAC
     using System;
     using System.Collections.Generic;
     
-    public partial class Transactions
+    public partial class WareHouse
     {
-        public int Id { get; set; }
-        public int GameId { get; set; }
-        public int ClientNumber { get; set; }
-        public string PartName { get; set; }
-        public int Amount { get; set; }
-        public string Status { get; set; }
-        public System.DateTime TransactionDate { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public WareHouse()
+        {
+            this.WareHouseParts = new HashSet<WareHouseParts>();
+        }
     
-        public virtual GameSessions GameSessions { get; set; }
-        public virtual Parts Parts { get; set; }
+        public int ID { get; set; }
+        public decimal balance { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<WareHouseParts> WareHouseParts { get; set; }
     }
 }
