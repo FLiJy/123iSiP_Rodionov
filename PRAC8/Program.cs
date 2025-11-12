@@ -139,12 +139,12 @@ class Program
     static void Register()
     {
         Console.Clear();
-        Console.WriteLine("=== Регистрация ===");
+        Console.WriteLine("===Регистрация===");
 
         Console.Write("Введите никнейм: ");
         string username = Console.ReadLine();
 
-        // Проверка, не занят ли ник
+        //проверка, не занят ли ник
         if (Core.Context.Users.Any(u => u.Username == username))
         {
             Console.WriteLine("Пользователь с таким ником уже существует!");
@@ -175,11 +175,11 @@ class Program
         UserMenu(newUser);
     }
 
-    // Авторизация
+    //Вход
     static void Login()
     {
         Console.Clear();
-        Console.WriteLine("=== Вход ===");
+        Console.WriteLine("===Вход===");
         Console.Write("Введите никнейм: ");
         string username = Console.ReadLine();
         Console.Write("Введите пароль: ");
@@ -188,7 +188,7 @@ class Program
         var user = Core.Context.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
         if (user == null)
         {
-            Console.WriteLine("Неверный логин или пароль!");
+            Console.WriteLine("Неверный логин или пароль");
             return;
         }
 
@@ -196,13 +196,13 @@ class Program
         UserMenu(user);
     }
 
-    // Меню пользователя
+    //меню юзера
     static void UserMenu(Users user)
     {
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"=== Меню пользователя: {user.Username} ===");
+            Console.WriteLine($"===Меню пользователя: {user.Username}===");
             Console.WriteLine("1 - Смотреть товары");
             Console.WriteLine("2 - Посмотреть корзину");
             Console.WriteLine("3 - История заказов");
@@ -230,7 +230,7 @@ class Program
         }
     }
 
-    // Просмотр товаров
+    //просмотр товаров
     static void ShowProducts(Users user)
     {
         Console.Clear();
@@ -272,7 +272,7 @@ class Program
         Console.ReadKey();
     }
 
-    // Просмотр корзины
+    //просмотр корзины
     static void ShowCart(Users user)
     {
         Console.Clear();
@@ -315,7 +315,7 @@ class Program
         }
     }
 
-    // Покупка одного товара
+    //покупка одного товара
     static void BuySingleItem(Users user, List<Cart> cartItems)
     {
         Console.Write("Введите номер товара из корзины: ");
@@ -346,7 +346,7 @@ class Program
         Console.ReadKey();
     }
 
-    // Покупка всех товаров
+    //покупка всех товаров
     static void BuyAllItems(Users user, List<Cart> cartItems)
     {
         Console.Write("Введите ПВЗ для всех товаров: ");
@@ -375,7 +375,7 @@ class Program
         Console.ReadKey();
     }
 
-    // Очистка корзины
+    //очистка корзины
     static void ClearCart(Users user)
     {
         var items = Core.Context.Cart.Where(c => c.UserId == user.Id).ToList();
@@ -385,11 +385,11 @@ class Program
         Console.ReadKey();
     }
 
-    // История заказов
+    //история заказов
     static void ShowOrderHistory(Users user)
     {
         Console.Clear();
-        Console.WriteLine("=== История заказов ===");
+        Console.WriteLine("===История заказов===");
 
         var orders = Core.Context.Orders
             .Where(o => o.UserId == user.Id)
