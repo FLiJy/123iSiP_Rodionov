@@ -24,7 +24,7 @@ class CarRepairSimulator
     // Заполняет случайный инвентарь, записывает в WareHouseParts и баланс в WareHouse
     private void StartNewSessionRandomInventory()
     {
-        using (var context = new Rodionov8PRACEntities())
+        using (var context = new Rodionov8PRACEntities1())
         {
             // Обновим/создадим запись склада с балансом
             var wh = context.WareHouse.FirstOrDefault(w => w.ID == WarehouseId);
@@ -134,7 +134,7 @@ class CarRepairSimulator
         var delivered = suppliesInTransit.Where(s => s.DeliveryCounter <= 0).ToList();
         if (delivered.Count > 0)
         {
-            using (var context = new Rodionov8PRACEntities())
+            using (var context = new Rodionov8PRACEntities1())
             {
                 foreach (var order in delivered)
                 {
@@ -196,7 +196,7 @@ class CarRepairSimulator
 
     private string PickRandomFault()
     {
-        using (var context = new Rodionov8PRACEntities())
+        using (var context = new Rodionov8PRACEntities1())
         {
             var parts = context.parts.Select(p => p.Name).ToList();
             if (parts.Count > 0)
@@ -207,7 +207,7 @@ class CarRepairSimulator
 
     private int FetchPartCost(string partName)
     {
-        using (var context = new Rodionov8PRACEntities())
+        using (var context = new Rodionov8PRACEntities1())
         {
             var part = context.parts.FirstOrDefault(p => p.Name == partName);
             return part != null ? (int)part.Price : 500;
@@ -303,7 +303,7 @@ class CarRepairSimulator
 
     private List<SimplePart> FetchAvailableParts()
     {
-        using (var context = new Rodionov8PRACEntities())
+        using (var context = new Rodionov8PRACEntities1())
         {
             return context.parts
                 .Select(p => new SimplePart { Name = p.Name, Price = (int)p.Price })
@@ -314,7 +314,7 @@ class CarRepairSimulator
     // Обновляет запись в WareHouseParts для данной детали (по имени)
     private void UpdateWareHousePartsQuantity(string partName, int amount)
     {
-        using (var context = new Rodionov8PRACEntities())
+        using (var context = new Rodionov8PRACEntities1())
         {
             var part = context.parts.FirstOrDefault(p => p.Name == partName);
             if (part == null) return;
@@ -339,7 +339,7 @@ class CarRepairSimulator
     // Сохраняет баланс склада (WareHouse)
     private void PersistWarehouseState()
     {
-        using (var context = new Rodionov8PRACEntities())
+        using (var context = new Rodionov8PRACEntities1())
         {
             var wh = context.WareHouse.FirstOrDefault(w => w.ID == WarehouseId);
             if (wh == null)

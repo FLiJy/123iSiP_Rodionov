@@ -152,7 +152,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="Rodionov8PRACEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="Rodionov8PRACEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="parts" EntityType="Self.parts" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
           <EntitySet Name="WareHouse" EntityType="Self.WareHouse" />
@@ -171,7 +171,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="Хранилище Rodionov8PRACModelContainer" CdmEntityContainer="Rodionov8PRACEntities">
+        <EntityContainerMapping StorageEntityContainer="Хранилище Rodionov8PRACModelContainer" CdmEntityContainer="Rodionov8PRACEntities1">
           <EntitySetMapping Name="parts">
             <EntityTypeMapping TypeName="Rodionov8PRACModel.parts">
               <MappingFragment StoreEntitySet="parts">

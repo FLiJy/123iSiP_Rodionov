@@ -9,6 +9,6 @@ namespace _7PRAC
   
         public class Core
         {
-            public static Rodionov8PRACEntities Context = new Rodionov8PRACEntities();
+            public static Rodionov8PRACEntities1 Context = new Rodionov8PRACEntities1();
         }
 }
