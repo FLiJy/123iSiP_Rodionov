@@ -24,18 +24,19 @@ namespace RoguelikeGame
                 }
                 else
                 {
-                    int eventType = GameRandom.rnd.Next(2);
 
-                    if (eventType == 0)
+                    bool isChest = GameRandom.NextBool(); 
+
+                    if (isChest)
+                    {
+                        Console.WriteLine("Вы нашли сундук!");
+                        ChestEvent(player);
+                    }
+                    else
                     {
                         Enemy enemy = EnemyFactory.CreateEnemy();
                         Console.WriteLine($"Вы встретили врага: {enemy.Name}!");
                         Battle(player, enemy);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Вы нашли сундук!");
-                        ChestEvent(player);
                     }
                 }
 
