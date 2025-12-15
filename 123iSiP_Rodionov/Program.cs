@@ -5,8 +5,6 @@ namespace RoguelikeGame
 {
     class Program
     {
-        static Random rnd = new Random();
-
         static void Main(string[] args)
         {
             Player player = new Player("Игрок");
@@ -26,7 +24,7 @@ namespace RoguelikeGame
                 }
                 else
                 {
-                    int eventType = rnd.Next(2);
+                    int eventType = GameRandom.rnd.Next(2);
 
                     if (eventType == 0)
                     {
@@ -99,7 +97,7 @@ namespace RoguelikeGame
 
         static void ChestEvent(Player player)
         {
-            int drop = rnd.Next(3);
+            int drop = GameRandom.rnd.Next(3);
 
             if (drop == 0)
             {

@@ -4,11 +4,10 @@ namespace RoguelikeGame.Model
 {
     class EnemyFactory
     {
-        static Random rnd = new Random();
 
         public static Enemy CreateEnemy()
         {
-            int type = rnd.Next(4);
+            int type = GameRandom.rnd.Next(4);
 
             switch (type)
             {
@@ -28,7 +27,7 @@ namespace RoguelikeGame.Model
 
         public static Enemy CreateBoss()
         {
-            int type = rnd.Next(3);
+            int type = GameRandom.rnd.Next(3);
 
             switch (type)
             {
